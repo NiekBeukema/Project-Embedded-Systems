@@ -7,10 +7,14 @@ enum {
     get_length,
     get_type,
     type_is,
-    temp_is,
-    length_is,
-    rollout_done,
     error,
+    temp_is,
+    rollout_done,
+    length_is,
+    get_light,
+    light_is,
+    set_temp_threshold,
+    set_light_threshold
 };
 
 /* Initialize CmdMessenger -- this should match PyCmdMessenger instance */
@@ -25,6 +29,12 @@ void on_get_type(void){
     c.sendCmd(type_is, "temp");
 }
 
+
+void on_get_light(void) {
+  int light = getLight();
+  c.sendCmd(light_is, light);
+}
+
 void on_get_temp(void) {
   float temp = getTemp();
   temp = roundf(temp);
@@ -33,7 +43,7 @@ void on_get_temp(void) {
 }
 
 void on_get_length(void) {
-  
+
   c.sendCmd(length_is, rollout);
 }
 
@@ -61,28 +71,38 @@ void on_unknown_command(void){
 }
 
 /* Attach callbacks for CmdMessenger commands */
-void attach_callbacks(void) { 
-  
+void attach_callbacks(void) {
+
     c.attach(get_type,on_get_type);
     c.attach(get_temp,on_get_temp);
+    c.attach(get_light,on_get_light);
     c.attach(get_length,on_get_length);
     c.attach(roll_out, on_roll_out);
     c.attach(on_unknown_command);
 }
 
 float getTemp() {
-  int reading = analogRead(0);  
- 
+  int reading = analogRead(0);
+
  // converting that reading to voltage, for 3.3v arduino use 3.3
   float voltage = reading * 5.0;
-  voltage /= 1024.0; 
- 
+  voltage /= 1024.0;
+
  // print out the voltage
- 
+
  // now print out the temperature
   float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
                                                //to degrees ((voltage - 500mV) times 100)
    return temperatureC;
+}
+
+int getLight() {
+  int lightPin = 1;
+  int lightReading;
+
+  lightReading = analogRead(lightPin);
+
+    return lightReading;
 }
 
 void setup() {

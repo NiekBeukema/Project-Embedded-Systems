@@ -6,8 +6,8 @@ class UnoNetworkController(object):
                 ["get_temp", ""],
                 ["get_length", ""],
                 ["get_type", ""],
-                ["error", "s"],
                 ["type_is", "s"],
+                ["error", "s"],
                 ["temp_is", "i"],
                 ["rollout_done", "s"],
                 ["length_is", "i"],
@@ -47,7 +47,7 @@ class UnoNetworkController(object):
     def rollOut(self, percentage):
         self.messenger.send("roll_out", percentage)
         time.sleep(3)
-        msg = self.messenger.receive()
+        msg = self.messenger.receive("s")
         return str(msg)
 
     def getTemp(self):
@@ -58,10 +58,10 @@ class UnoNetworkController(object):
         return "U"
 
     def getLight(self):
-        if self.getType() == "light":
+        if self.getType() == "temp":
             self.messenger.send("get_light")
-            msg = self.messenger.receive()
-            return int(str(msg[1][0]).split(".")[0])
+            msg = self.messenger.receive("s")
+            return int(str(msg[1][0]))
         return "U"
 
     def getLength(self):
@@ -73,8 +73,3 @@ class UnoNetworkController(object):
         self.messenger.send("force_error")
         msg = self.messenger.receive("s")
         return msg
-
-
-
-
-
