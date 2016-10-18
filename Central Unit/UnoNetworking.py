@@ -64,3 +64,12 @@ class UnoNetworkController(object):
         self.messenger.send("force_error")
         msg = self.messenger.receive("s")
         return msg
+
+    def setLightThreshold(self, value):
+        self.messenger.send("set_light_value", value)
+        return
+
+
+    def setTempThreshold(self, value):
+        self.messenger.send("set_temp_threshold", value)
+        return

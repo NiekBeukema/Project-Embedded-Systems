@@ -1,4 +1,6 @@
 #include "CmdMessenger.h"
+#include <Thread.h>
+#include <ThreadController.h>
 
 /* Define available CmdMessenger commands */
 enum {
@@ -19,9 +21,20 @@ enum {
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 int rollout = 0;
+int lightThreshold = 0;
+int tempThreshold = 0;
 
 /* Create callback functions to deal with incoming messages */
 
+void on_set_temp_threshold(void) {
+  int setValue = c.readBinArg<int>();
+  tempThreshold = setValue;
+}
+
+void on_set_light_threshold(void) {
+  int setValue = c.readBinArg<int>();
+  lightThreshold = setValue;
+}
 
 void on_get_light(void) {
   int light = getLight();
@@ -70,6 +83,8 @@ void attach_callbacks(void) {
     c.attach(get_light,on_get_light);
     c.attach(get_length,on_get_length);
     c.attach(roll_out, on_roll_out);
+    c.attach(set_temp_threshold, on_set_temp_threshold);
+    c.attach(set_light_threshold, on_set_light_threshold);
     c.attach(on_unknown_command);
 }
 
