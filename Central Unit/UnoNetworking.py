@@ -13,8 +13,8 @@ class UnoNetworkController(object):
                 ["length_is", "i"],
                 ["get_light", ""],
                 ["light_is", "i"],
-                ["set_temp_threshold"],
-                ["set_light_threshold"]]
+                ["set_temp_threshold", "i"],
+                ["set_light_threshold", "i"]]
 
     arduino = 0#PyCmdMessenger.ArduinoBoard("COM3", baud_rate=9600)
     messenger = 0#PyCmdMessenger.CmdMessenger(arduino, commands)
