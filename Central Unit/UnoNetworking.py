@@ -11,7 +11,10 @@ class UnoNetworkController(object):
                 ["temp_is", "i"],
                 ["rollout_done", "s"],
                 ["length_is", "i"],
-                ["force_error", ""]]
+                ["get_light", ""],
+                ["light_is", "i"],
+                ["set_temp_threshold"],
+                ["set_light_threshold"]]
 
     arduino = 0#PyCmdMessenger.ArduinoBoard("COM3", baud_rate=9600)
     messenger = 0#PyCmdMessenger.CmdMessenger(arduino, commands)
@@ -58,13 +61,13 @@ class UnoNetworkController(object):
         if self.getType() == "light":
             self.messenger.send("get_light")
             msg = self.messenger.receive()
-            return int(msg[1][0])
+            return int(str(msg[1][0]).split(".")[0])
         return "U"
 
     def getLength(self):
         self.messenger.send("get_length")
         msg = self.messenger.receive("s")
-        return int(msg[1][0])
+        return int(str(msg[1][0]).split(".")[0])
 
     def forceError(self):
         self.messenger.send("force_error")
