@@ -5,7 +5,7 @@ controller = UnoNetworkController();
 
 controller.connect()
 
-controller.
+print(controller.getTemp())
 
 
 

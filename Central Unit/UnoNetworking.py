@@ -8,7 +8,7 @@ class UnoNetworkController(object):
                 ["get_type", ""],
                 ["error", "s"],
                 ["type_is", "s"],
-                ["temp_is", "i"],
+                ["temp_is", "ii"],
                 ["rollout_done", "s"],
                 ["length_is", "i"],
                 ["force_error", ""]]

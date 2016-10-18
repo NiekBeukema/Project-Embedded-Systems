@@ -26,8 +26,10 @@ void on_get_type(void){
 }
 
 void on_get_temp(void) {
-  //Haal waarde op
-  c.sendCmd(temp_is, 25);
+  float temp = getTemp();
+  temp = roundf(temp);
+  temp = (int) temp;
+  c.sendCmd(temp_is, temp);
 }
 
 void on_get_length(void) {
@@ -55,6 +57,21 @@ void attach_callbacks(void) {
     c.attach(get_length,on_get_length);
     c.attach(roll_out, on_roll_out);
     c.attach(on_unknown_command);
+}
+
+float getTemp() {
+  int reading = analogRead(0);  
+ 
+ // converting that reading to voltage, for 3.3v arduino use 3.3
+  float voltage = reading * 5.0;
+  voltage /= 1024.0; 
+ 
+ // print out the voltage
+ 
+ // now print out the temperature
+  float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
+                                               //to degrees ((voltage - 500mV) times 100)
+   return temperatureC;
 }
 
 void setup() {
