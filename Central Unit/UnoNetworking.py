@@ -39,7 +39,7 @@ class UnoNetworkController(object):
     def getType(self):
         self.messenger.send("get_type")
         msg = self.messenger.receive("s")
-        return str(msg)
+        return str(msg[1][0])
 
     def rollOut(self, percentage):
         self.messenger.send("roll_out", percentage)
