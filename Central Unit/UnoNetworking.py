@@ -8,7 +8,7 @@ class UnoNetworkController(object):
                 ["get_type", ""],
                 ["error", "s"],
                 ["type_is", "s"],
-                ["temp_is", "ii"],
+                ["temp_is", "i"],
                 ["rollout_done", "s"],
                 ["length_is", "i"],
                 ["force_error", ""]]
@@ -50,7 +50,7 @@ class UnoNetworkController(object):
         if self.getType() == "temp":
             self.messenger.send("get_temp")
             msg = self.messenger.receive("s")
-            return int(msg[1][0])
+            return int(str(msg[1][0]).split(".")[0])
         return "U"
 
     def getLight(self):
