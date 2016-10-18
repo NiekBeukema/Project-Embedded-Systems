@@ -4,7 +4,8 @@ import time
 controller = UnoNetworkController();
 
 controller.connect()
-controller.getType()
+print(controller.getType())
+print(controller.rollOut(88))
 print(controller.getTemp())
 
 

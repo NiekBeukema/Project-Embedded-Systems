@@ -40,8 +40,19 @@ void on_get_length(void) {
 void on_roll_out(void) {
   int rolValue = c.readBinArg<int>();
   rollout = rolValue;
+  /* Blink led */
+  pinMode(2, OUTPUT);
+  int i = 0;
+  while( i < rolValue) {
+    digitalWrite(2, HIGH);
+    delay(50);
+    digitalWrite(2, LOW);
+    delay(20);
+    i += 2;
+  }
   c.sendCmd(rollout_done, "Rollout complete");
 }
+
 
 
 /* callback */

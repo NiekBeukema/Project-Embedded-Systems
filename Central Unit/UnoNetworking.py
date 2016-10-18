@@ -1,6 +1,6 @@
 import PyCmdMessenger
 import serial.tools.list_ports
-
+import time
 class UnoNetworkController(object):
     commands = [["roll_out", "i"],
                 ["get_temp", ""],
@@ -43,6 +43,7 @@ class UnoNetworkController(object):
 
     def rollOut(self, percentage):
         self.messenger.send("roll_out", percentage)
+        time.sleep(3)
         msg = self.messenger.receive()
         return str(msg)
 
