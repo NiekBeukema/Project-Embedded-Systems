@@ -4,10 +4,11 @@ import time
 controller = UnoNetworkController();
 
 controller.connect()
-print(controller.getType())
-#print(controller.rollOut(88))
+
+controller.rollOut(88)
+print("Temperatuur:")
 print(controller.getTemp())
-print(controller.getType())
+print("Licht:")
 print(controller.getLight())
 
 

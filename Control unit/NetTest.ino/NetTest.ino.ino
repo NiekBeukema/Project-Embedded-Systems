@@ -5,8 +5,6 @@ enum {
     roll_out,
     get_temp,
     get_length,
-    get_type,
-    type_is,
     error,
     temp_is,
     rollout_done,
@@ -23,11 +21,6 @@ CmdMessenger c = CmdMessenger(Serial,',',';','/');
 int rollout = 0;
 
 /* Create callback functions to deal with incoming messages */
-
-/* callback */
-void on_get_type(void){
-    c.sendCmd(type_is, "temp");
-}
 
 
 void on_get_light(void) {
@@ -73,7 +66,6 @@ void on_unknown_command(void){
 /* Attach callbacks for CmdMessenger commands */
 void attach_callbacks(void) {
 
-    c.attach(get_type,on_get_type);
     c.attach(get_temp,on_get_temp);
     c.attach(get_light,on_get_light);
     c.attach(get_length,on_get_length);
