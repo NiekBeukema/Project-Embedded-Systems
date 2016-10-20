@@ -23,10 +23,11 @@ enum {
 /* Initialize CmdMessenger -- this should match PyCmdMessenger instance */
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
-bool isAuto = true;
+bool isAuto = false;
 bool rolledOut = false;
 int lightThreshold;
 int tempThreshold;
+int temp;
 
 /* Create callback functions to deal with incoming messages */
 
@@ -37,7 +38,7 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
  
   while(1) {
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
-    int temp = getTemp();
+    temp = getTemp();
     if(temp > tempThreshold && !rolledOut) {
       rollOut(true);
     }
@@ -84,7 +85,7 @@ void on_get_light(void) {
 }
 
 void on_get_temp(void) {
-  c.sendCmd(temp_is, getTemp();
+  c.sendCmd(temp_is, getTemp());
 }
 
 void on_get_length(void) {
@@ -139,7 +140,7 @@ int getLight() {
 }
 
 void rollOut(bool rollOut) {
-  int rolValue = 50
+  int rolValue = 50;
   /* Blink led */
   pinMode(2, OUTPUT);
   int i = 0;
