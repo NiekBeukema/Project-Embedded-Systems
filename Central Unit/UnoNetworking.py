@@ -1,6 +1,7 @@
 import PyCmdMessenger
 import serial.tools.list_ports
 import time
+
 class UnoNetworkController(object):
     commands = [["roll_out", "i"],
                 ["get_temp", ""],
@@ -12,7 +13,8 @@ class UnoNetworkController(object):
                 ["get_light", ""],
                 ["light_is", "i"],
                 ["set_temp_threshold", "i"],
-                ["set_light_threshold", "i"]]
+                ["set_light_threshold", "i"],
+                ["timer_runtime_end", "s"]]
 
     arduino = 0#PyCmdMessenger.ArduinoBoard("COM3", baud_rate=9600)
     messenger = 0#PyCmdMessenger.CmdMessenger(arduino, commands)
@@ -64,3 +66,7 @@ class UnoNetworkController(object):
         self.messenger.send("force_error")
         msg = self.messenger.receive("s")
         return msg
+
+    def waitForMessage(self):
+        msg = self.messenger.receive("s")
+        return msg;

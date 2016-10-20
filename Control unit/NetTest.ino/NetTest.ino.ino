@@ -1,4 +1,7 @@
 #include "CmdMessenger.h"
+#include "pt.h"
+
+struct pt pt1, pt2;
 
 /* Define available CmdMessenger commands */
 enum {
@@ -12,37 +15,61 @@ enum {
     get_light,
     light_is,
     set_temp_threshold,
-    set_light_threshold
+    set_light_threshold,
+    timer_runtime_end
 };
+
 
 /* Initialize CmdMessenger -- this should match PyCmdMessenger instance */
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
-int rollout = 0;
+bool isAuto = true;
 
 /* Create callback functions to deal with incoming messages */
 
+static int thread1(struct pt *pt, int interval_1, int interval_2)
+{
+  static unsigned long timestamp = 0;
+  PT_BEGIN(pt);
+ 
+  while(1) {
+    PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
+    temp = getTemp();
+    c.sendCmd(timer_runtime_end, "temp sensor");
+    PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
+    c.sendCmd(timer_runtime_end, "light sensor");
+    timestamp = millis(); // take a new timestamp
+  }
+  PT_END(pt);
+}
+
+static int thread2(struct pt *pt, int interval)
+{
+  static unsigned long timestamp = 0;
+  PT_BEGIN(pt);
+ 
+  while(1) {
+    PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
+    timestamp = millis(); // take a new timestamp
+    c.sendCmd(timer_runtime_end, "light sensor");
+  }
+  PT_END(pt);
+}
 
 void on_get_light(void) {
-  int light = getLight();
-  c.sendCmd(light_is, light);
+  c.sendCmd(light_is, getLight());
 }
 
 void on_get_temp(void) {
-  float temp = getTemp();
-  temp = roundf(temp);
-  temp = (int) temp;
-  c.sendCmd(temp_is, temp);
+  c.sendCmd(temp_is, getTemp();
 }
 
 void on_get_length(void) {
-
-  c.sendCmd(length_is, rollout);
+  c.sendCmd(length_is, 20);
 }
 
 void on_roll_out(void) {
   int rolValue = c.readBinArg<int>();
-  rollout = rolValue;
   /* Blink led */
   pinMode(2, OUTPUT);
   int i = 0;
@@ -73,7 +100,7 @@ void attach_callbacks(void) {
     c.attach(on_unknown_command);
 }
 
-float getTemp() {
+int getTemp() {
   int reading = analogRead(0);
 
  // converting that reading to voltage, for 3.3v arduino use 3.3
@@ -84,7 +111,9 @@ float getTemp() {
 
  // now print out the temperature
   float temperatureC = (voltage - 0.5) * 100 ;  //converting from 10 mv per degree wit 500 mV offset
-                                               //to degrees ((voltage - 500mV) times 100)
+                                               //to degrees ((voltage - 500mV) times 100
+  temp = roundf(temperatureC);
+  temp = (int) temp;
    return temperatureC;
 }
 
@@ -99,9 +128,14 @@ int getLight() {
 
 void setup() {
     Serial.begin(BAUD_RATE);
-    attach_callbacks();    
+    attach_callbacks();
+    PT_INIT(&pt1);
+    PT_INIT(&pt2);   
 }
 
 void loop() {
     c.feedinSerialData();
+    thread1(&pt1, 30000, 10000);
+    thread2(&pt2, 40000);
 }
+

@@ -5,10 +5,9 @@ controller = UnoNetworkController();
 
 controller.connect()
 
-controller.rollOut(88)
-print("Temperatuur:")
-print(controller.getTemp())
-print("Licht:")
-print(controller.getLight())
+while(1):
+    msg = controller.waitForMessage();
+    if(msg != None):
+        print(msg)
 
 
