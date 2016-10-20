@@ -24,6 +24,9 @@ enum {
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = true;
+bool rolledOut = false;
+int lightThreshold;
+int tempThreshold;
 
 /* Create callback functions to deal with incoming messages */
 
@@ -34,10 +37,30 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
  
   while(1) {
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
-    temp = getTemp();
-    c.sendCmd(timer_runtime_end, "temp sensor");
+    int temp = getTemp();
+    if(temp > tempThreshold && !rolledOut) {
+      rollOut(true);
+    }
+
+    else if(temp < tempThreshold && rolledOut) {
+      rollOut(false);
+    }
+    if(!isAuto) {
+      c.sendCmd(temp_is, temp);
+    }
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
-    c.sendCmd(timer_runtime_end, "light sensor");
+    int light = getLight();
+    if(light > lightThreshold && !rolledOut) {
+      rollOut(true);
+    }
+
+    else if(light < lightThreshold && rolledOut) {
+      rollOut(false);
+    }
+    if(!isAuto) {
+      c.sendCmd(light_is, light);
+    }
+    
     timestamp = millis(); // take a new timestamp
   }
   PT_END(pt);
@@ -69,18 +92,7 @@ void on_get_length(void) {
 }
 
 void on_roll_out(void) {
-  int rolValue = c.readBinArg<int>();
-  /* Blink led */
-  pinMode(2, OUTPUT);
-  int i = 0;
-  while( i < rolValue) {
-    digitalWrite(2, HIGH);
-    delay(50);
-    digitalWrite(2, LOW);
-    delay(20);
-    i += 2;
-  }
-  c.sendCmd(rollout_done, "Rollout complete");
+  rollOut(true);
 }
 
 
@@ -124,6 +136,24 @@ int getLight() {
   lightReading = analogRead(lightPin);
 
     return lightReading;
+}
+
+void rollOut(bool rollOut) {
+  int rolValue = 50
+  /* Blink led */
+  pinMode(2, OUTPUT);
+  int i = 0;
+  while( i < rolValue) {
+    digitalWrite(2, HIGH);
+    delay(50);
+    digitalWrite(2, LOW);
+    delay(20);
+    i += 2;
+  }
+  rolledOut = rollOut;
+  c.sendCmd(rollout_done, "Rollout complete");
+  
+  
 }
 
 void setup() {
