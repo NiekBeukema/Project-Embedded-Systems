@@ -22,55 +22,51 @@ class HelloWorld(object):
 
         return '''
         <html>
-            <head>
-                <title>Zeng Home | Project 2.1</title>
-                <script type="Javascript" src="/vis.min.js"></script>
-                <link rel="stylesheet" href="/metro.min.css">
-                <link rel="stylesheet" href="/metro-responsive.min.css"
-                <link rel="stylesheet" href="/vis.min.css">
-                <script type="Javascript" src="/jquery-3.1.1.min.js"></script>
-                <script type="Javascript" src="/metro.min.js"></script>
-
-            </head>
-            <body>
-                <div class="grid">
-                    <div class="row">
-                        <div class="cell">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
-                        <div class="cell">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
-                    </div>
-                    <div class="row">
-                        <div id="visualization1" class="cell">
-                            <div class="tile">
-                                <div class="tile-content iconic">
-                                    <icon/>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="visualization2" class="cell"></div>
-                    </div>
-                </div>
-                <script type="text/javascript">
-                    var container1 = document.getElementById('visualization1');
-                    var container2 = document.getElementById('visualization2');
-                      var items = [
-                        {x: '2014-06-11', y: 10},
-                        {x: '2014-06-12', y: 25},
-                        {x: '2014-06-13', y: 30},
-                        {x: '2014-06-14', y: 10},
-                        {x: '2014-06-15', y: 15},
-                        {x: '2014-06-16', y: 30}
-                      ];
-
-                      var dataset = new vis.DataSet(items);
-                      var options = {
-                        start: '2014-06-10',
-                        end: '2014-06-18'
-                      };
-                      var graph2d1 = new vis.Graph2d(container1, dataset, options);
-                      var graph2d2 = new vis.Graph2d(container2, dataset, options);
-                </script>
-            </body>
-        </html>'''
+	<head>
+ 		<title>Zeng Home | Project 2.1</title>
+        <link rel="stylesheet" href="/static/css/metro.min.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/metro-responsive.min.css" type="text/css" />
+        <script type="Javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+        <script type="Javascript" src="/static/js/metro.min.js"></script>
+        <script src="/static/js/vis.js"></script>
+        <link href="/static/css/vis.css" rel="stylesheet" type="text/css" />
+    </head>
+	<body>
+	    <div class="grid">
+	        <div class="row">
+		        <div class="cell">
+		        	is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+		        </div>
+	        </div>
+	        <div class="cell">
+	        	is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+        	</div>
+        </div>
+		<div class="row">
+			<div id="visualization1" class="cell"></div>
+		</div>
+		<div id="visualization2" class="cell"></div>
+		<script type="text/javascript">
+			var container1 = document.getElementById('visualization1');
+			var container2 = document.getElementById('visualization2');
+			var items = [
+				{x: '2014-06-11', y: 10},
+				{x: '2014-06-12', y: 25},
+				{x: '2014-06-13', y: 30},
+				{x: '2014-06-14', y: 10},
+				{x: '2014-06-15', y: 15},
+				{x: '2014-06-16', y: 30}
+			];
+			var dataset = new vis.DataSet(items);
+			var options = {
+				start: '2014-06-10',
+				end: '2014-06-18'
+			};
+			var graph2d1 = new vis.Graph2d(container1, dataset, options);
+			var graph2d2 = new vis.Graph2d(container2, dataset, options);
+		</script>
+	</body>
+</html>'''
 
     @cherrypy.expose
     # settings page for various variables
