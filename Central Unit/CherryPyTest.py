@@ -33,19 +33,30 @@ class HelloWorld(object):
     </head>
 	<body>
 	    <div class="grid">
-	        <div class="row">
+	        <div class="row cells2">
 		        <div class="cell">
-		        	is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+		            <label>Light Threshold</label><br>
+		        	<div class="input-control text">
+                        <input type="text" placeholder="Enter light threshold value...">
+                    </div><br>
+                    <label>Temperature Threshold</label><br>
+                    <div class="input-control text">
+                        <input type="text" placeholder="Enter temperature threshold value...">
+                    </div><br>
+                    <label>Current Temperature: </label><div id="currenttemp"></div><br>
+                    <label>Current Light: </label><div id="currentlight"></div><br>
 		        </div>
-	        </div>
-	        <div class="cell">
-	        	is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
-        	</div>
+
+                <div class="cell">
+                    is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                </div>
+            </div>
+            <div class="row cells2">
+                <div id="visualization1" class="cell"></div>
+
+                <div id="visualization2" class="cell"></div>
+            </div>
         </div>
-		<div class="row">
-			<div id="visualization1" class="cell"></div>
-		</div>
-		<div id="visualization2" class="cell"></div>
 		<script type="text/javascript">
 			var container1 = document.getElementById('visualization1');
 			var container2 = document.getElementById('visualization2');
