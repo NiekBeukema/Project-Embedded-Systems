@@ -14,6 +14,8 @@ enum {
     length_is,
     get_light,
     light_is,
+    distance_is,
+    get_distance,
     set_temp_threshold,
     set_light_threshold,
     timer_runtime_end
@@ -84,6 +86,10 @@ void on_get_light(void) {
   c.sendCmd(light_is, getLight());
 }
 
+void on_get_distance(void) {
+  c.sendCmd(distance_is, getDistance());
+}
+
 void on_get_temp(void) {
   c.sendCmd(temp_is, getTemp());
 }
@@ -108,6 +114,7 @@ void attach_callbacks(void) {
 
     c.attach(get_temp,on_get_temp);
     c.attach(get_light,on_get_light);
+    c.attach(get_distance,on_get_distance);
     c.attach(get_length,on_get_length);
     c.attach(roll_out, on_roll_out);
     c.attach(on_unknown_command);
@@ -137,6 +144,36 @@ int getLight() {
   lightReading = analogRead(lightPin);
 
     return lightReading;
+}
+
+int getDistance() {
+  // WISKUNDE TIJD: tijd = afstand/snelheid
+  // Snelheid van geluid is 0.034cm/ms
+  // UltraSon verstuurt en ontvangt, dus delen door 2
+  // s= t*0,034/2
+  int trigPin = 8;
+  int echoPin = 9;
+
+  long duration;
+  int distance;
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  
+  // Calculating the distance
+  distance= duration*0.034/2;
+    return distance;
 }
 
 void rollOut(bool rollOut) {

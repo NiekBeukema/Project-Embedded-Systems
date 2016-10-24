@@ -12,6 +12,8 @@ class UnoNetworkController(object):
                 ["length_is", "i"],
                 ["get_light", ""],
                 ["light_is", "i"],
+                ["distance_is", "i"],
+                ["get_distance", "i"],
                 ["set_temp_threshold", "i"],
                 ["set_light_threshold", "i"],
                 ["timer_runtime_end", "s"]]
@@ -53,6 +55,11 @@ class UnoNetworkController(object):
 
     def getLight(self):
         self.messenger.send("get_light")
+        msg = self.messenger.receive("s")
+        return int(str(msg[1][0]))
+
+    def getDistance(self):
+        self.messenger.send("get_distance")
         msg = self.messenger.receive("s")
         return int(str(msg[1][0]))
 
