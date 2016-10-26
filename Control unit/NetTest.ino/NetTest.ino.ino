@@ -151,29 +151,35 @@ int getDistance() {
   // Snelheid van geluid is 0.034cm/ms
   // UltraSon verstuurt en ontvangt, dus delen door 2
   // s= t*0,034/2
-  int trigPin = 8;
-  int echoPin = 9;
 
-  long duration;
-  int distance;
-
+  //Pins instellen
+  int trigPin = 8;    //Trig - green Jumper
+  int echoPin = 9;    //Echo - yellow Jumper
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 
+  long duration;
+  long distance;
+
+  //Voor een goede waarde, begin met een lage pulse.
+  //De sensor wordt getriggered door een hoge pulse van 10+ seconden.
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-  
-  // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  
-  // Reads the echoPin, returns the sound wave travel time in microseconds
+ 
+  // Lees echoPin, return in MS
   duration = pulseIn(echoPin, HIGH);
   
   // Calculating the distance
-  distance= duration*0.034/2;
+  distance = duration*0.034/2;
+  delay(250);
+  if(distance < 250){
     return distance;
+  } else {
+    return 0;
+  }
 }
 
 void rollOut(bool rollOut) {
