@@ -15,9 +15,13 @@ enum {
     get_light,
     light_is,
     distance_is,
+    light_threshold_is,
+    temp_threshold_is,
     get_distance,
     set_temp_threshold,
     set_light_threshold,
+    get_light_threshold,
+    get_temp_threshold,
     timer_runtime_end
 };
 
@@ -27,8 +31,8 @@ const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = false;
 bool rolledOut = false;
-int lightThreshold;
-int tempThreshold;
+int lightThreshold = 20;
+int tempThreshold = 256;
 int temp;
 
 /* Create callback functions to deal with incoming messages */
@@ -102,8 +106,13 @@ void on_roll_out(void) {
   rollOut(true);
 }
 
+void on_get_light_threshold(void) {
+  c.sendCmd(light_threshold_is, getLightThreshold());
+}
 
-
+void on_get_temp_threshold(void) {
+  c.sendCmd(temp_threshold_is, getTempThreshold());
+}
 /* callback */
 void on_unknown_command(void){
     c.sendCmd(error,"Command without callback.");
@@ -117,6 +126,8 @@ void attach_callbacks(void) {
     c.attach(get_distance,on_get_distance);
     c.attach(get_length,on_get_length);
     c.attach(roll_out, on_roll_out);
+    c.attach(get_light_threshold, on_get_light_threshold);
+    c.attach(get_temp_threshold, on_get_temp_threshold);
     c.attach(on_unknown_command);
 }
 
@@ -180,6 +191,14 @@ int getDistance() {
   } else {
     return 0;
   }
+}
+
+int getLightThreshold() {
+  return lightThreshold;
+}
+
+int getTempThreshold() {
+  return tempThreshold;
 }
 
 void rollOut(bool rollOut) {
