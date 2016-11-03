@@ -2,7 +2,8 @@ from UnoNetworking import UnoNetworkController
 import cherrypy
 import os.path
 
-class HelloWorld(object):
+
+class Default(object):
 
     def __init__(self):
         # establish connection with Arduino
@@ -142,6 +143,6 @@ class HelloWorld(object):
 
 if __name__ == '__main__':
     # start cherrypy server
-    cherrypy.quickstart(HelloWorld(), '/', 'CherryPyTest.config')
+    cherrypy.quickstart(Default(), '/', 'CherryPyTest.config')
 
 

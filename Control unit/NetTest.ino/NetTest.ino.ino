@@ -31,8 +31,8 @@ const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = false;
 bool rolledOut = false;
-int lightThreshold = 20;
-int tempThreshold = 256;
+int lightThreshold;
+int tempThreshold;
 int temp;
 
 /* Create callback functions to deal with incoming messages */
