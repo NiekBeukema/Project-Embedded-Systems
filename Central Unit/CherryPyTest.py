@@ -1,6 +1,7 @@
 from UnoNetworking import UnoNetworkController
 import cherrypy
 import os.path
+from random import randint
 
 
 class Default(object):
@@ -20,19 +21,31 @@ class Default(object):
             self.controller.rollOut(percentage)
 
         # convert int to str for display reasons
-        self.lightValue = "30" #str(self.controller.getLight())
-        self.tempValue = "23" #str(self.controller.getTemp())
+        self.lightValue = str(randint(10,30)) #str(self.controller.getLight())
+        self.tempValue = str(randint(10,30)) #str(self.controller.getTemp())
 
         return '''
         <html>
             <head>
                 <title>Zeng Home | Project 2.1</title>
+
+                <!-- JS Scripts -->
+                <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+                <!-- <script type="Javascript" src="https://code.jquery.com/jquery-3.1.1.js"></script> -->
+
+                <!-- when loading visjs from disk i get a "vis is not defined" error.
+                     I don't get this error when using a cdn.
+                     i suspect this is somehow due to the load time of the visjs file -->
+
+                <!-- <script type="javascript" src="/static/js/vis.min.js"></script> -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+                <script type="Javascript" src="/static/js/metro.min.js"></script>
+
+                <!-- StyleSheets -->
+                <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
                 <link rel="stylesheet" href="/static/css/metro.min.css" type="text/css">
                 <link rel="stylesheet" href="/static/css/metro-responsive.min.css" type="text/css" />
-                <script type="Javascript" src="/static/js/jquery-3.1.1.min.js"></script>
-                <script type="Javascript" src="/static/js/metro.min.js"></script>
-                <script src="/static/js/vis.js"></script>
-                <link href="/static/css/vis.css" rel="stylesheet" type="text/css" />
+
             </head>
             <body>
                 <div class="grid">
@@ -49,8 +62,10 @@ class Default(object):
                             <a href="settings">Settings Are Here</a>
                             <br/>
                             <br/>
-                            <label>Current Temperature: </label><div id="currenttemp">''' + self.tempValue + '''</div><br>
-                            <label>Current Light: </label><div id="currentlight">''' + self.lightValue + '''</div><br>
+                            <div id="values">
+                                <label>Current Temperature: </label><div id="currenttemp">''' + self.tempValue + '''</div><br>
+                                <label>Current Light: </label><div id="currentlight">''' + self.lightValue + '''</div><br>
+                            </div>
                         </div>
 	                    <div class="cell">
 	                        is simply dummy text of the printing and typesetting industry.
@@ -67,25 +82,43 @@ class Default(object):
 
                     <div id="visualization2" class="cell"></div>
                 </div>
+
+                <!-- <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+                <script type="javascript" src="/static/js/vis.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+                <script type="Javascript" src="/static/js/metro.min.js"></script> -->
+
                 <script type="text/javascript">
-                    var container1 = document.getElementById('visualization1');
-                    var container2 = document.getElementById('visualization2');
-                    var items = [
-                        {x: '2014-06-11', y: 10},
-                        {x: '2014-06-12', y: 25},
-                        {x: '2014-06-13', y: 30},
-                        {x: '2014-06-14', y: 10},
-                        {x: '2014-06-15', y: 15},
-                        {x: '2014-06-16', y: 30}
-                    ];
-                    var dataset = new vis.DataSet(items);
-                    var options = {
-                        start: '2014-06-10',
-                        end: '2014-06-18'
-                    };
-                    var graph2d1 = new vis.Graph2d(container1, dataset, options);
-                    var graph2d2 = new vis.Graph2d(container2, dataset, options);
+
+                    $(document).ready(function() {
+
+                        setInterval(function() {
+                            // console.log("calling..");
+                            $('#values').load("values");
+                        }, 5000);
+
+                        $(document).delay(1000);
+
+                        var container1 = document.getElementById('visualization1');
+                        var container2 = document.getElementById('visualization2');
+                        var items = [
+                            {x: '2014-06-11', y: 10},
+                            {x: '2014-06-12', y: 25},
+                            {x: '2014-06-13', y: 30},
+                            {x: '2014-06-14', y: 10},
+                            {x: '2014-06-15', y: 15},
+                            {x: '2014-06-16', y: 30}
+                        ];
+                        var dataset = new vis.DataSet(items);
+                        var options = {
+                            start: '2014-06-10',
+                            end: '2014-06-18'
+                        };
+                        var graph2d1 = new vis.Graph2d(container1, dataset, options);
+                        var graph2d2 = new vis.Graph2d(container2, dataset, options);
+                    });
                 </script>
+
             </body>
         </html>'''
 
@@ -99,6 +132,16 @@ class Default(object):
         if tempThreshold:
             print("i got " + str(tempThreshold) + " as a temp value")
             # self.controller.setTempThreshold(tempThreshold)
+
+        # self.currentLightThreshold = str(self.controller.getLightThreshold())
+
+        # debug for use without arduino connected
+        self.currentLightThreshold = str(randint(10, 50))
+
+        # self.currentTempThreshold = str(self.controller.getTempThreshold())
+
+        # debug for use without arduino connected
+        self.currentTempThreshold = str(randint(10,50))
 
         return '''
         <html>
@@ -121,15 +164,21 @@ class Default(object):
                     <div class="row cells10">
                         <div class="cell offset1 colspan4">
                             <form method="post">
+                                <label>Current lightThreshold is: ''' + self.currentLightThreshold + '''</label>
+                                <br/>
                                 <label for="lightThreshold">LightThreshold: </label>
                                 <div class="input-control text">
-                                    <input type="text" size="5" name="lightThreshold" placeholder="Threshold"/>
+                                    <input type="text" size="5" name="lightThreshold" value="''' + self.currentLightThreshold + '''"
+                                    placeholder="Threshold"/>
                                 </div>
                                 <br/>
                                 <br/>
+                                <label>Current tempThreshold is: ''' + self.currentTempThreshold + '''</label>
+                                <br/>
                                 <label for="tempThreshold">TempThreshold: </label>
                                 <div class="input-control text">
-                                    <input type="text" size="5" name="tempThreshold" placeholder="Threshold"/>
+                                    <input type="text" size="5" name="tempThreshold"
+                                    value="''' + self.currentTempThreshold + '''" placeholder="Threshold"/>
                                 </div>
                                 <br/>
                                 <br/>
@@ -140,6 +189,19 @@ class Default(object):
                 </div>
             </body>
         </html>'''
+
+    # small page to load the temp and light values from
+    @cherrypy.expose()
+    def values(self):
+
+        # for debug purposes without arduino connected
+        self.lightValue = str(randint(10,30))
+        self.tempValue = str(randint(10,30))
+
+        return '''
+        <label>Current Temperature: </label><div id="currenttemp">''' + self.tempValue + '''</div><br>
+        <label>Current Light: </label><div id="currentlight">''' + self.lightValue + '''</div><br>'''
+
 
 if __name__ == '__main__':
     # start cherrypy server
