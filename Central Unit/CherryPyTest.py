@@ -1,6 +1,6 @@
 from UnoNetworking import UnoNetworkController
 import cherrypy
-import os.path
+# import os.path
 from random import randint
 
 
@@ -21,8 +21,8 @@ class Default(object):
             self.controller.rollOut(percentage)
 
         # convert int to str for display reasons
-        self.lightValue = str(randint(10,30)) #str(self.controller.getLight())
-        self.tempValue = str(randint(10,30)) #str(self.controller.getTemp())
+        lightValue = str(randint(10, 30))  # str(self.controller.getLight())
+        tempValue = str(randint(10, 30))  # str(self.controller.getTemp())
 
         return '''
         <html>
@@ -63,18 +63,21 @@ class Default(object):
                             <br/>
                             <br/>
                             <div id="values">
-                                <label>Current Temperature: </label><div id="currenttemp">''' + self.tempValue + '''</div><br>
-                                <label>Current Light: </label><div id="currentlight">''' + self.lightValue + '''</div><br>
+                                <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
+                                <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>
                             </div>
                         </div>
-	                    <div class="cell">
-	                        is simply dummy text of the printing and typesetting industry.
-	                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer
-	                        took a galley of type and scrambled it to make a type specimen book.
-	                        It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-	                        It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-	                        and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
-	                    </div>
+                        <div class="cell">
+                            is simply dummy text of the printing and typesetting industry.
+                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                            when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                            It has survived not only five centuries, but also the leap into electronic typesetting,
+                            remaining essentially unchanged.
+                            It was popularised in the 1960s with the release of Letraset sheets containing
+                            Lorem Ipsum passages,
+                            and more recently with desktop publishing software like Aldus PageMaker including
+                            versions of Lorem Ipsum
+                        </div>
                     </div>
                 </div>
                 <div class="row cells2">
@@ -82,11 +85,6 @@ class Default(object):
 
                     <div id="visualization2" class="cell"></div>
                 </div>
-
-                <!-- <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
-                <script type="javascript" src="/static/js/vis.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
-                <script type="Javascript" src="/static/js/metro.min.js"></script> -->
 
                 <script type="text/javascript">
 
@@ -136,12 +134,12 @@ class Default(object):
         # self.currentLightThreshold = str(self.controller.getLightThreshold())
 
         # debug for use without arduino connected
-        self.currentLightThreshold = str(randint(10, 50))
+        currentLightThreshold = str(randint(10, 50))
 
         # self.currentTempThreshold = str(self.controller.getTempThreshold())
 
         # debug for use without arduino connected
-        self.currentTempThreshold = str(randint(10,50))
+        currentTempThreshold = str(randint(10, 50))
 
         return '''
         <html>
@@ -164,21 +162,21 @@ class Default(object):
                     <div class="row cells10">
                         <div class="cell offset1 colspan4">
                             <form method="post">
-                                <label>Current lightThreshold is: ''' + self.currentLightThreshold + '''</label>
+                                <label>Current lightThreshold is: ''' + currentLightThreshold + '''</label>
                                 <br/>
                                 <label for="lightThreshold">LightThreshold: </label>
                                 <div class="input-control text">
-                                    <input type="text" size="5" name="lightThreshold" value="''' + self.currentLightThreshold + '''"
+                                    <input type="text" size="5" name="lightThreshold" value="''' + currentLightThreshold + '''"
                                     placeholder="Threshold"/>
                                 </div>
                                 <br/>
                                 <br/>
-                                <label>Current tempThreshold is: ''' + self.currentTempThreshold + '''</label>
+                                <label>Current tempThreshold is: ''' + currentTempThreshold + '''</label>
                                 <br/>
                                 <label for="tempThreshold">TempThreshold: </label>
                                 <div class="input-control text">
                                     <input type="text" size="5" name="tempThreshold"
-                                    value="''' + self.currentTempThreshold + '''" placeholder="Threshold"/>
+                                    value="''' + currentTempThreshold + '''" placeholder="Threshold"/>
                                 </div>
                                 <br/>
                                 <br/>
@@ -195,12 +193,12 @@ class Default(object):
     def values(self):
 
         # for debug purposes without arduino connected
-        self.lightValue = str(randint(10,30))
-        self.tempValue = str(randint(10,30))
+        lightValue = str(randint(10, 30))
+        tempValue = str(randint(10, 30))
 
         return '''
-        <label>Current Temperature: </label><div id="currenttemp">''' + self.tempValue + '''</div><br>
-        <label>Current Light: </label><div id="currentlight">''' + self.lightValue + '''</div><br>'''
+        <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
+        <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>'''
 
 
 if __name__ == '__main__':
