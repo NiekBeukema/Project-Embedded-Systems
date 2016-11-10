@@ -2,6 +2,7 @@ from UnoNetworking import UnoNetworkController
 import cherrypy
 # import os.path
 from random import randint
+import time
 
 
 class Default(object):
@@ -9,6 +10,8 @@ class Default(object):
     def __init__(self):
         # establish connection with Arduino
         self.controller = UnoNetworkController()
+        self.test = 0
+
 
     # cherrypy.expose exposes a def as a webpage
     @cherrypy.expose
@@ -66,6 +69,7 @@ class Default(object):
                                 <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
                                 <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>
                             </div>
+                            <label>DIkke anus ''' + self.tempValue + ''' </label>
                         </div>
                         <div class="cell">
                             is simply dummy text of the printing and typesetting industry.
@@ -115,6 +119,24 @@ class Default(object):
                         var graph2d1 = new vis.Graph2d(container1, dataset, options);
                         var graph2d2 = new vis.Graph2d(container2, dataset, options);
                     });
+
+                    function RefreshGraph() {
+                        $.ajax({
+                            url : 'temp.php',
+                            type : 'POST',
+                            dataType : 'json',
+                            success : function (result) {
+                                var getTime = new Date();
+                                datasetgpu1.update({x: getTime.getTime(), y: result['gpu1']});
+                                datasetcpu1.update({x: getTime.getTime(), y: result['cpu1']});
+                                $("#gputempbadge").text(result['gpu1']);
+                                $("#cputempbadge").text(result['cpu']);
+                            },
+                            error : function (obj, ovj, error) {
+                                reportError(error);
+                            }
+                        })
+                    }
                 </script>
 
             </body>
@@ -204,5 +226,6 @@ class Default(object):
 if __name__ == '__main__':
     # start cherrypy server
     cherrypy.quickstart(Default(), '/', 'CherryPyTest.config')
+
 
 
