@@ -21,6 +21,7 @@ enum {
     set_temp_threshold,
     set_light_threshold,
     get_light_threshold,
+    set_max_rollout,
     get_temp_threshold,
     timer_runtime_end
 };
@@ -31,9 +32,11 @@ const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = false;
 bool rolledOut = false;
-int lightThreshold;
-int tempThreshold;
+int lightThreshold = 250;
+int tempThreshold = 21;
 int temp;
+int maxRollout = 150;
+
 
 /* Create callback functions to deal with incoming messages */
 
@@ -78,10 +81,14 @@ static int thread2(struct pt *pt, int interval)
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
  
-  while(1) {
-    PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
-    timestamp = millis(); // take a new timestamp
-    c.sendCmd(timer_runtime_end, "light sensor");
+  if(rolledOut) {
+    digitalWrite(4, HIGH);
+    digitalWrite(3, LOW);
+  }
+
+  else {
+    digitalWrite(3, HIGH);
+    digitalWrite(4, LOW);
   }
   PT_END(pt);
 }
@@ -103,7 +110,15 @@ void on_get_length(void) {
 }
 
 void on_roll_out(void) {
-  rollOut(true);
+  int rollout = c.readInt16Arg(); 
+  if(rollout == 1) {
+    rollOut(true);
+  }
+
+  if(rollout == 0) {
+    rollOut(false);
+  }
+  
 }
 
 void on_get_light_threshold(void) {
@@ -189,7 +204,7 @@ int getDistance() {
   if(distance < 250){
     return distance;
   } else {
-    return 0;
+    return 250;
   }
 }
 
@@ -202,18 +217,38 @@ int getTempThreshold() {
 }
 
 void rollOut(bool rollOut) {
-  int rolValue = 50;
-  /* Blink led */
-  pinMode(2, OUTPUT);
-  int i = 0;
-  while( i < rolValue) {
-    digitalWrite(2, HIGH);
-    delay(50);
-    digitalWrite(2, LOW);
-    delay(20);
-    i += 2;
+  int rolValue;
+  if(rollOut) {
+    while( getDistance() < maxRollout) {
+      digitalWrite(2, HIGH);
+      delay(50);
+      digitalWrite(2, LOW);
+      delay(20);
+    }
+    
   }
+
+  else {
+    while( getDistance() > 5) {
+      digitalWrite(2, HIGH);
+      delay(50);
+      digitalWrite(2, LOW);
+      delay(20);
+    }
+  }
+  
+  /* Blink led */
+  
   rolledOut = rollOut;
+  if(rollOut) {
+    digitalWrite(4, HIGH);
+    digitalWrite(3, LOW);
+  }
+
+  else {
+    digitalWrite(3, HIGH);
+    digitalWrite(4, LOW);
+  }
   c.sendCmd(rollout_done, "Rollout complete");
   
   
@@ -221,14 +256,19 @@ void rollOut(bool rollOut) {
 
 void setup() {
     Serial.begin(BAUD_RATE);
+    pinMode(2, OUTPUT);
+    pinMode(3, OUTPUT);
+    pinMode(4, OUTPUT);
     attach_callbacks();
     PT_INIT(&pt1);
     PT_INIT(&pt2);   
+  
 }
 
 void loop() {
+    
     c.feedinSerialData();
     thread1(&pt1, 30000, 10000);
-    thread2(&pt2, 40000);
+    thread2(&pt2, 100);
 }
 

@@ -19,6 +19,7 @@ class UnoNetworkController(object):
                 ["set_temp_threshold", "i"],
                 ["set_light_threshold", "i"],
                 ["get_light_threshold", "i"],
+                ["set_max_rollout", "i"],
                 ["get_temp_threshold", "i"],
                 ["timer_runtime_end", "s"]]
 
@@ -45,8 +46,8 @@ class UnoNetworkController(object):
         print("Connected succesfully")
         return True
 
-    def rollOut(self, percentage):
-        self.messenger.send("roll_out", percentage)
+    def rollOut(self, roll_out):
+        self.messenger.send("roll_out", roll_out)
         time.sleep(3)
         msg = self.messenger.receive("s")
         return str(msg)

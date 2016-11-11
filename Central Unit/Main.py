@@ -4,8 +4,8 @@ import time
 controller = UnoNetworkController();
 
 controller.connect()
+controller.rollOut(0)
 while(1):
-    print(controller.getDistance())
     msg = controller.waitForMessage();
     if(msg != None):
         print(msg)
