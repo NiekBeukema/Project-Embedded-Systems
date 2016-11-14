@@ -69,7 +69,6 @@ class Default(object):
                                 <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
                                 <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>
                             </div>
-                            <label>DIkke anus ''' + self.tempValue + ''' </label>
                         </div>
                         <div class="cell">
                             is simply dummy text of the printing and typesetting industry.
@@ -93,50 +92,47 @@ class Default(object):
                 <script type="text/javascript">
 
                     $(document).ready(function() {
-
-                        setInterval(function() {
-                            // console.log("calling..");
-                            $('#values').load("values");
-                        }, 5000);
-
                         $(document).delay(1000);
 
                         var container1 = document.getElementById('visualization1');
                         var container2 = document.getElementById('visualization2');
+                        var getTime = new Date();
+                        var getTimePlus = new Date(getTime);
+                        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
                         var items = [
-                            {x: '2014-06-11', y: 10},
-                            {x: '2014-06-12', y: 25},
-                            {x: '2014-06-13', y: 30},
-                            {x: '2014-06-14', y: 10},
-                            {x: '2014-06-15', y: 15},
-                            {x: '2014-06-16', y: 30}
+                            {x: getTime.getTime(), y: 0}
                         ];
-                        var dataset = new vis.DataSet(items);
+                        var graph2d1data = new vis.DataSet(items);
+                        var graph2d2data = new vis.DataSet(items);
                         var options = {
-                            start: '2014-06-10',
-                            end: '2014-06-18'
+                            start: getTime.getTime(),
+                            end: getTimePlus.getTime()
                         };
-                        var graph2d1 = new vis.Graph2d(container1, dataset, options);
-                        var graph2d2 = new vis.Graph2d(container2, dataset, options);
-                    });
-
-                    function RefreshGraph() {
-                        $.ajax({
-                            url : 'temp.php',
+                        var graph2d1 = new vis.Graph2d(container1, graph2d1data, options);
+                        var graph2d2 = new vis.Graph2d(container2, graph2d2data, options);
+                        setInterval(function() {
+                            // console.log("calling..");
+                            console.log($('#values').load("values"));
+                            $.ajax({
+                            url : 'values',
                             type : 'POST',
                             dataType : 'json',
                             success : function (result) {
+                            console.log(result);
                                 var getTime = new Date();
-                                datasetgpu1.update({x: getTime.getTime(), y: result['gpu1']});
-                                datasetcpu1.update({x: getTime.getTime(), y: result['cpu1']});
+                                graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+                                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
                                 $("#gputempbadge").text(result['gpu1']);
                                 $("#cputempbadge").text(result['cpu']);
                             },
                             error : function (obj, ovj, error) {
-                                reportError(error);
+                                console.log(obj);
+                                console.log(ovj);
+                                console.log(error);
                             }
                         })
-                    }
+                        }, 5000);
+                    });
                 </script>
 
             </body>
@@ -217,10 +213,7 @@ class Default(object):
         # for debug purposes without arduino connected
         lightValue = str(randint(10, 30))
         tempValue = str(randint(10, 30))
-
-        return '''
-        <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
-        <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>'''
+        return '''{"tempValue":''' + tempValue + ''', "lightValue":''' + lightValue + '''}'''
 
 
 if __name__ == '__main__':
