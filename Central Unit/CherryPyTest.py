@@ -20,6 +20,8 @@ class Default(object):
         # convert int to str for display reasons
         lightValue = str(self.controller.getLight())
         tempValue = str(self.controller.getTemp())
+        rolledOutValue = str(self.controller.getRolledOut())
+
 
         return '''
         <html>
@@ -46,9 +48,11 @@ class Default(object):
           <br/>
           <div id="values">
             <label>Current Temperature: </label>
-            <div id="currenttemp">''' + tempValue + '''</div><br>
+            <div id="currenttemp">''' + tempValue + ''' Cº</div><br>
             <label>Current Light: </label>
-            <div id="currentlight">''' + lightValue + '''</div><br>
+            <div id="currentlight">''' + lightValue + ''' Lx</div><br>
+            <label>Status: </label>
+            <div id="currentstatus">''' + rolledOutValue + '''</div><br>
           </div>
         </div>
         <div class="col-md-8">
@@ -90,7 +94,7 @@ class Default(object):
         var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
         setInterval(function() {
           // console.log("calling..");
-          console.log($('#values').load("values"));
+          //console.log($('#values').load("values"));
           $.ajax({
             url : 'values',
             type : 'POST',
@@ -98,8 +102,18 @@ class Default(object):
             success : function (result) {
             console.log(result);
             var getTime = new Date();
-            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
-            graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
+            if(result['tempValue'] != 0 && result['lightValue'] != 0 && result['rolledOutValue'] != 0) {
+                //knipperdieknipper
+            }
+
+            else {
+                graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
+                $("#currenttemp").html(result['tempValue'] + "Cº");
+                $("#currentlight").html(result['lightValue'] + "Lx");
+                $("#currentstatus").html(result['rolledOutValue']);
+            }
+
             },
             error : function (obj, ovj, error) {
               console.log(obj);
@@ -107,7 +121,7 @@ class Default(object):
               console.log(error);
             }
           })
-        }, 5000);
+        }, 2000);
       });
     </script>
 
@@ -189,7 +203,11 @@ class Default(object):
         # for debug purposes without arduino connected
         lightValue = self.controller.getLight()
         tempValue = self.controller.getTemp()
-        return '''{"tempValue":''' + str(tempValue) + ''', "lightValue":''' + str(lightValue) + '''}'''
+        rolledOutValue = self.controller.getRolledOut()
+        print(lightValue)
+        print(tempValue)
+        print(rolledOutValue)
+        return '''{"tempValue":''' + str(tempValue) + ''', "lightValue":''' + str(lightValue) + ''', "rolledOutValue":''' + str(rolledOutValue) + '''}'''
 
 
 if __name__ == '__main__':

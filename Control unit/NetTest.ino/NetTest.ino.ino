@@ -23,7 +23,9 @@ enum {
     get_light_threshold,
     set_max_rollout,
     get_temp_threshold,
-    timer_runtime_end
+    timer_runtime_end,
+    is_rolled_out,
+    is_rolled_out_is
 };
 
 
@@ -31,9 +33,9 @@ enum {
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = false;
-bool rolledOut = false;
-int lightThreshold = 400; //300 is daglicht
-int tempThreshold = 22; // 20 is kamertmep
+int rolledOut = 0;
+int lightThreshold = 200; //300 is daglicht
+int tempThreshold = 25; // 20 is kamertmep
 int temp;
 int maxRollout = 150;
 
@@ -49,26 +51,26 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
     temp = getTemp();
     if(temp > tempThreshold && !rolledOut) {
-      thread4(pt4, true);
+      thread4(&pt4, true);
     }
 
     else if(temp < tempThreshold && rolledOut) {
-      thread4(pt4, false);
+      thread4(&pt4, false);
     }
     if(!isAuto) {
-      c.sendCmd(temp_is, temp);
+     // c.sendCmd(temp_is, temp);
     }
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
     int light = getLight();
     if(light > lightThreshold && !rolledOut) {
-      thread4(pt4, true);
+      thread4(&pt4, true);
     }
 
     else if(light < lightThreshold && rolledOut) {
-      thread4(pt4, false);
+      thread4(&pt4, false);
     }
     if(!isAuto) {
-      c.sendCmd(light_is, light);
+     // c.sendCmd(light_is, light);
     }
     
     timestamp = millis(); // take a new timestamp
@@ -102,14 +104,14 @@ static int thread3(struct pt *pt)
 static int thread4(struct pt *pt, bool rollIn) {
   PT_BEGIN(pt)
   int rolValue;
-  if(rollOut) {
+ if(rollIn) {
     while( getDistance() < maxRollout) {
       digitalWrite(2, HIGH);
       delay(50);
       digitalWrite(2, LOW);
       delay(20);
     }
-    
+
   }
 
   else {
@@ -120,11 +122,11 @@ static int thread4(struct pt *pt, bool rollIn) {
       delay(20);
     }
   }
-  
+
   /* Blink led */
-  
-  rolledOut = rollOut;
-  if(rollOut) {
+
+  rolledOut = rollIn;
+  if(rollIn) {
     digitalWrite(4, HIGH);
     digitalWrite(3, LOW);
   }
@@ -133,7 +135,6 @@ static int thread4(struct pt *pt, bool rollIn) {
     digitalWrite(3, HIGH);
     digitalWrite(4, LOW);
   }
-  c.sendCmd(rollout_done, "Rollout complete");
   PT_END(pt)
 }
 
@@ -156,11 +157,11 @@ void on_get_length(void) {
 void on_roll_out(void) {
   int rollout = c.readInt16Arg(); 
   if(rollout == 1) {
-    thread4(pt4, true);
+    thread4(&pt4, true);
   }
 
   if(rollout == 0) {
-    thread4(pt4, false);
+    thread4(&pt4, false);
   }
   
 }
@@ -176,6 +177,10 @@ void on_get_temp_threshold(void) {
 void on_set_temp_threshold(void) {
    tempThreshold = c.readBinArg<int>();
     c.sendCmd(temp_threshold_is, tempThreshold);
+}
+
+void on_is_rolled_out(void) {
+    c.sendCmd(is_rolled_out_is, rolledOut);
 }
 
 void on_set_light_threshold(void) {
@@ -199,6 +204,7 @@ void attach_callbacks(void) {
     c.attach(get_temp_threshold, on_get_temp_threshold);
     c.attach(set_temp_threshold, on_set_temp_threshold);
     c.attach(set_light_threshold, on_set_light_threshold);
+    c.attach(is_rolled_out, on_is_rolled_out);
 
     c.attach(on_unknown_command);
 }
