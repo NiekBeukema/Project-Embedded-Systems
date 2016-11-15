@@ -11,21 +11,15 @@ class Default(object):
         # establish connection with Arduino
         self.controller = UnoNetworkController()
         self.test = 0
-
+        self.controller.connect()
 
     # cherrypy.expose exposes a def as a webpage
     @cherrypy.expose
     def index(self, percentage=0):
-        self.controller.connect()
-
-        # self.controller.rollOut(88)
-
-        if percentage:
-            self.controller.rollOut(percentage)
 
         # convert int to str for display reasons
-        lightValue = str(randint(10, 30))  # str(self.controller.getLight())
-        tempValue = str(randint(10, 30))  # str(self.controller.getTemp())
+        lightValue = str(self.controller.getLight())
+        tempValue = str(self.controller.getTemp())
 
         return '''
         <html>
@@ -92,8 +86,6 @@ class Default(object):
                 <script type="text/javascript">
 
                     $(document).ready(function() {
-                        $(document).delay(1000);
-
                         var container1 = document.getElementById('visualization1');
                         var container2 = document.getElementById('visualization2');
                         var getTime = new Date();
@@ -131,7 +123,7 @@ class Default(object):
                                 console.log(error);
                             }
                         })
-                        }, 5000);
+                        }, 1000);
                     });
                 </script>
 
@@ -208,12 +200,12 @@ class Default(object):
 
     # small page to load the temp and light values from
     @cherrypy.expose()
-    def values(self):
 
+    def values(self):
         # for debug purposes without arduino connected
-        lightValue = str(randint(10, 30))
-        tempValue = str(randint(10, 30))
-        return '''{"tempValue":''' + tempValue + ''', "lightValue":''' + lightValue + '''}'''
+        lightValue = self.controller.getLight()
+        tempValue = self.controller.getTemp()
+        return '''{"tempValue":''' + str(tempValue) + ''', "lightValue":''' + str(lightValue) + '''}'''
 
 
 if __name__ == '__main__':

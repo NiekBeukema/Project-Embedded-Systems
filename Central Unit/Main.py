@@ -13,7 +13,8 @@ while(1):
     if(msg != None):
         print(msg)
     time.sleep(1)
-    print(controller.setTempThreshold(randint(100, 300)))
+    print(controller.getTemp())
+    print(controller.getLight())
         #if "temp_is" in msg:
        #     print(msg[1])
        # elif "light_is" in msg:

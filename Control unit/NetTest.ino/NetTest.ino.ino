@@ -96,7 +96,6 @@ static int thread3(struct pt *pt)
 {
   PT_BEGIN(pt);
   c.feedinSerialData();
-  
   PT_END(pt);
 }
 

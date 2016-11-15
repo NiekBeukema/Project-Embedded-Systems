@@ -56,18 +56,27 @@ class UnoNetworkController(object):
     def getTemp(self):
         self.messenger.send("get_temp")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]).split(".")[0])
+        if(msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
 
     def getLight(self):
         self.messenger.send("get_light")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]))
+        if (msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
     def getDistance(self):
         self.messenger.send("get_distance")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]))
+        if (msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
 
     def getLength(self):
