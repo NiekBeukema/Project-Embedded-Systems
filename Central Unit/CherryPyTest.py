@@ -29,114 +29,97 @@ class Default(object):
 
         return '''
         <html>
-            <head>
-                <title>Zeng Home | Project 2.1</title>
 
-                <!-- JS Scripts -->
-                <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
-                <!-- <script type="Javascript" src="https://code.jquery.com/jquery-3.1.1.js"></script> -->
+  <head>
+    <title>Zeng Home | Project 2.1</title>
 
-                <!-- when loading visjs from disk i get a "vis is not defined" error.
-                     I don't get this error when using a cdn.
-                     i suspect this is somehow due to the load time of the visjs file -->
+    <!-- JS Scripts -->
+    <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-                <!-- <script type="javascript" src="/static/js/vis.min.js"></script> -->
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
-                <script type="Javascript" src="/static/js/metro.min.js"></script>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  </head>
 
-                <!-- StyleSheets -->
-                <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
-                <link rel="stylesheet" href="/static/css/metro.min.css" type="text/css">
-                <link rel="stylesheet" href="/static/css/metro-responsive.min.css" type="text/css" />
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <a href="settings">Settings Are Here</a>
+          <br/>
+          <br/>
+          <div id="values">
+            <label>Current Temperature: </label>
+            <div id="currenttemp">''' + tempValue + '''</div><br>
+            <label>Current Light: </label>
+            <div id="currentlight">''' + lightValue + '''</div><br>
+          </div>
+        </div>
+        <div class="col-md-8">
+          is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not
+          only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
+          software like Aldus PageMaker including versions of Lorem Ipsum
+        </div>
+      </div>
+      <div class="row">&nbsp;</div>
+      <div class="row">
+        <div class="col-md-5">
+          <div id="tempGraph"></div>
+        </div>
+        <div class="col-md-5 col-md-offset-1">
+          <div id="lightGraph"></div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        //$(document).delay(1000);
 
-            </head>
-            <body>
-                <div class="grid">
-                    <div class="row cells2">
-                        <div class="cell">
-                            <!-- <label>Light Threshold</label><br>
-                            <div class="input-control text">
-                                <input type="text" placeholder="Enter light threshold value...">
-                            </div><br>
-                            <label>Temperature Threshold</label><br>
-                            <div class="input-control text">
-                                <input type="text" placeholder="Enter temperature threshold value...">
-                            </div><br> -->
-                            <a href="settings">Settings Are Here</a>
-                            <br/>
-                            <br/>
-                            <div id="values">
-                                <label>Current Temperature: </label><div id="currenttemp">''' + tempValue + '''</div><br>
-                                <label>Current Light: </label><div id="currentlight">''' + lightValue + '''</div><br>
-                            </div>
-                        </div>
-                        <div class="cell">
-                            is simply dummy text of the printing and typesetting industry.
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                            when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                            It has survived not only five centuries, but also the leap into electronic typesetting,
-                            remaining essentially unchanged.
-                            It was popularised in the 1960s with the release of Letraset sheets containing
-                            Lorem Ipsum passages,
-                            and more recently with desktop publishing software like Aldus PageMaker including
-                            versions of Lorem Ipsum
-                        </div>
-                    </div>
-                </div>
-                <div class="row cells2">
-                    <div id="visualization1" class="cell"></div>
+        var tempContainer = document.getElementById('tempGraph');
+        var lightContainer = document.getElementById('lightGraph');
+        var getTime = new Date();
+        var getTimePlus = new Date(getTime);
+        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
+        var items = [
+          {x: getTime.getTime(), y: 0}
+        ];
+        var graph2d1data = new vis.DataSet(items);
+        var graph2d2data = new vis.DataSet(items);
+        var options = {
+          start: getTime.getTime(),
+          end: getTimePlus.getTime(),
+          autoResize: true
+        };
+        var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
+        var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
+        setInterval(function() {
+          // console.log("calling..");
+          console.log($('#values').load("values"));
+          $.ajax({
+            url : 'values',
+            type : 'POST',
+            dataType : 'json',
+            success : function (result) {
+            console.log(result);
+            var getTime = new Date();
+            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+            graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
+            },
+            error : function (obj, ovj, error) {
+              console.log(obj);
+              console.log(ovj);
+              console.log(error);
+            }
+          })
+        }, 5000);
+      });
+    </script>
 
-                    <div id="visualization2" class="cell"></div>
-                </div>
+  </body>
 
-                <script type="text/javascript">
-
-                    $(document).ready(function() {
-                        $(document).delay(1000);
-
-                        var container1 = document.getElementById('visualization1');
-                        var container2 = document.getElementById('visualization2');
-                        var getTime = new Date();
-                        var getTimePlus = new Date(getTime);
-                        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
-                        var items = [
-                            {x: getTime.getTime(), y: 0}
-                        ];
-                        var graph2d1data = new vis.DataSet(items);
-                        var graph2d2data = new vis.DataSet(items);
-                        var options = {
-                            start: getTime.getTime(),
-                            end: getTimePlus.getTime()
-                        };
-                        var graph2d1 = new vis.Graph2d(container1, graph2d1data, options);
-                        var graph2d2 = new vis.Graph2d(container2, graph2d2data, options);
-                        setInterval(function() {
-                            // console.log("calling..");
-                            console.log($('#values').load("values"));
-                            $.ajax({
-                            url : 'values',
-                            type : 'POST',
-                            dataType : 'json',
-                            success : function (result) {
-                            console.log(result);
-                                var getTime = new Date();
-                                graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
-                                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
-                                $("#gputempbadge").text(result['gpu1']);
-                                $("#cputempbadge").text(result['cpu']);
-                            },
-                            error : function (obj, ovj, error) {
-                                console.log(obj);
-                                console.log(ovj);
-                                console.log(error);
-                            }
-                        })
-                        }, 5000);
-                    });
-                </script>
-
-            </body>
-        </html>'''
+</html>'''
 
     @cherrypy.expose
     # settings page for various variables
