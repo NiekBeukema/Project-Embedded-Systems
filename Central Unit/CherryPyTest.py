@@ -28,10 +28,6 @@ class Default(object):
         tempValue = str(self.controller.getTemp())
         rolledOutValue = str(self.controller.getRolledOut())
 
-        # debug values
-        # lightValue = str(randint(10,30))
-        # tempValue = str(randint(10,30))
-        # rolledOutValue = str(1)
 
         return '''
         <html>
@@ -103,39 +99,55 @@ class Default(object):
                       })
                 }
 
-                  $(document).ready(function() {
+    function wait(ms) {
+        var start = new Date().getTime();
+        var end = start;
+        while(end < start + ms) {
+            end = new Date().getTime();
+        }
+    }
 
-                    var tempContainer = document.getElementById('tempGraph');
-                    var lightContainer = document.getElementById('lightGraph');
-                    var getTime = new Date();
-                    var getTimePlus = new Date(getTime);
-                    getTimePlus.setMinutes(getTime.getMinutes() + 5 )
-                    var items = [
-                      {x: getTime.getTime(), y: 0}
-                    ];
-                    var graph2d1data = new vis.DataSet(items);
-                    var graph2d2data = new vis.DataSet(items);
-                    var options = {
-                      start: getTime.getTime(),
-                      end: getTimePlus.getTime(),
-                      autoResize: true
-                    };
-                    var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
-                    var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
-                    function updateGraph() {
-                      $.when(ajax1()).done(function(result) {
-                        console.log("Request Completed");
-                        var getTime = new Date();
-                        graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
-                            graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
-                            $("#currenttemp").html(result['tempValue'] + "Cº");
-                            $("#currentlight").html(result['lightValue'] + "Lx");
-                            $("#currentstatus").html(result['rolledOutValue']);
-                        setTimeout(updateGraph(), 3000);
-                      })
-                    }
-                  });
-                </script>
+      $(document).ready(function() {
+        //$(document).delay(1000);
+
+        var tempContainer = document.getElementById('tempGraph');
+        var lightContainer = document.getElementById('lightGraph');
+        var getTime = new Date();
+        var getTimePlus = new Date(getTime);
+        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
+        var items = [
+          {x: getTime.getTime(), y: 0}
+        ];
+        var graph2d1data = new vis.DataSet(items);
+        var graph2d2data = new vis.DataSet(items);
+        var options = {
+          start: getTime.getTime(),
+          end: getTimePlus.getTime(),
+          autoResize: true,
+          drawPoints: false
+        };
+        var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
+        var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
+        function updateGraph() {
+          $.when(ajax1()).done(function(result) {
+            var getTime = new Date();
+            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
+                $("#currenttemp").html(result['tempValue'] + "Cº");
+                $("#currentlight").html(result['lightValue'] + "Lx");
+                $("#currentstatus").html(result['rolledOutValue']);
+                wait(3000);
+                updateGraph();
+          })
+
+        }
+
+     console.log("First execution");
+     updateGraph();
+
+      });
+    </script>
+
             </body>
         </html>'''
 
@@ -216,9 +228,6 @@ class Default(object):
         lightValue = self.controller.getLight()
         tempValue = self.controller.getTemp()
         rolledOutValue = self.controller.getRolledOut()
-        print(lightValue)
-        print(tempValue)
-        print(rolledOutValue)
         return '''{"tempValue":''' + str(tempValue) + ''', "lightValue":''' + str(lightValue) + ''', "rolledOutValue":''' + str(rolledOutValue) + '''}'''
 
 

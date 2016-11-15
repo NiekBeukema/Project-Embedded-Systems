@@ -37,6 +37,7 @@ int rolledOut = 0;
 int lightThreshold = 200; //300 is daglicht
 int tempThreshold = 25; // 20 is kamertmep
 int temp;
+int light;
 int maxRollout = 150;
 
 
@@ -47,42 +48,35 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
  
-  while(1) {
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
     temp = getTemp();
-    if(temp > tempThreshold && !rolledOut) {
+    light = getLight();
+    if((temp > tempThreshold || light > lightThreshold) && rolledOut == 0) {
       thread4(&pt4, true);
     }
 
-    else if(temp < tempThreshold && rolledOut) {
+    else if((temp < tempThreshold && light < lightThreshold) && rolledOut == 1) {
       thread4(&pt4, false);
     }
-    if(!isAuto) {
-     // c.sendCmd(temp_is, temp);
-    }
+    timestamp = millis(); // take a new timestamp
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
-    int light = getLight();
-    if(light > lightThreshold && !rolledOut) {
+    if((light > lightThreshold || temp > tempThreshold) && rolledOut == 0) {
       thread4(&pt4, true);
     }
 
-    else if(light < lightThreshold && rolledOut) {
+    else if((light < lightThreshold && temp < tempThreshold) && rolledOut == 1) {
       thread4(&pt4, false);
-    }
-    if(!isAuto) {
-     // c.sendCmd(light_is, light);
     }
     
     timestamp = millis(); // take a new timestamp
-  }
   PT_END(pt);
-}
+  }
 
 static int thread2(struct pt *pt, int interval)
 {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
-  if(rolledOut) {
+  if(rolledOut == 1) {
     digitalWrite(4, HIGH);
     digitalWrite(3, LOW);
   }
@@ -102,7 +96,7 @@ static int thread3(struct pt *pt)
 }
 
 static int thread4(struct pt *pt, bool rollIn) {
-  PT_BEGIN(pt)
+  PT_BEGIN(pt);
   int rolValue;
  if(rollIn) {
     while( getDistance() < maxRollout) {
@@ -125,17 +119,19 @@ static int thread4(struct pt *pt, bool rollIn) {
 
   /* Blink led */
 
-  rolledOut = rollIn;
+
   if(rollIn) {
     digitalWrite(4, HIGH);
     digitalWrite(3, LOW);
+    rolledOut = 1;
   }
 
   else {
     digitalWrite(3, HIGH);
     digitalWrite(4, LOW);
+    rolledOut = 0;
   }
-  PT_END(pt)
+  PT_END(pt);
 }
 
 void on_get_light(void) {
@@ -155,7 +151,7 @@ void on_get_length(void) {
 }
 
 void on_roll_out(void) {
-  int rollout = c.readInt16Arg(); 
+  int rollout = c.readBinArg<int>();
   if(rollout == 1) {
     thread4(&pt4, true);
   }
@@ -295,7 +291,7 @@ void loop() {
     
     
     //thread1(&pt1, 30000, 10000);
-    thread1(&pt1, 10000, 10000);
+    thread1(&pt1, 5000, 5000);
     thread2(&pt2, 100);
     thread3(&pt3);
 }
