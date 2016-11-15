@@ -72,6 +72,14 @@ class Default(object):
       </div>
     </div>
     <script type="text/javascript">
+    function ajax1() {
+        return $.ajax({
+            url : 'values',
+            type : 'POST',
+            dataType : 'json'
+          })
+    }
+
       $(document).ready(function() {
         //$(document).delay(1000);
 
@@ -93,33 +101,14 @@ class Default(object):
         var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
         var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
         setInterval(function() {
-          // console.log("calling..");
-          //console.log($('#values').load("values"));
-          $.ajax({
-            url : 'values',
-            type : 'POST',
-            dataType : 'json',
-            success : function (result) {
-            console.log(result);
+          $.when(ajax1()).done(function(result) {
+            console.log("Request Completed");
             var getTime = new Date();
-            if(result['tempValue'] != 0 && result['lightValue'] != 0 && result['rolledOutValue'] != 0) {
-                //knipperdieknipper
-            }
-
-            else {
-                graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
                 graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
                 $("#currenttemp").html(result['tempValue'] + "Cº");
                 $("#currentlight").html(result['lightValue'] + "Lx");
                 $("#currentstatus").html(result['rolledOutValue']);
-            }
-
-            },
-            error : function (obj, ovj, error) {
-              console.log(obj);
-              console.log(ovj);
-              console.log(error);
-            }
           })
         }, 2000);
       });
@@ -201,6 +190,7 @@ class Default(object):
     def values(self):
 
         # for debug purposes without arduino connected
+        print("Update values")
         lightValue = self.controller.getLight()
         tempValue = self.controller.getTemp()
         rolledOutValue = self.controller.getRolledOut()

@@ -14,6 +14,8 @@ while(1):
         print(msg)
     print("Uitogeroldeerd?")
     print(controller.getRolledOut())
+    print(controller.getTemp())
+    print(controller.getLight())
         #if "temp_is" in msg:
        #     print(msg[1])
        # elif "light_is" in msg:
