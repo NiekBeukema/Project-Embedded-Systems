@@ -1,7 +1,7 @@
 #include "CmdMessenger.h"
 #include "pt.h"
 
-struct pt pt1, pt2, pt3;
+struct pt pt1, pt2, pt3, pt4;
 
 /* Define available CmdMessenger commands */
 enum {
@@ -49,11 +49,11 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
     temp = getTemp();
     if(temp > tempThreshold && !rolledOut) {
-      rollOut(true);
+      thread4(pt4, true);
     }
 
     else if(temp < tempThreshold && rolledOut) {
-      rollOut(false);
+      thread4(pt4, false);
     }
     if(!isAuto) {
       c.sendCmd(temp_is, temp);
@@ -61,11 +61,11 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
     int light = getLight();
     if(light > lightThreshold && !rolledOut) {
-      rollOut(true);
+      thread4(pt4, true);
     }
 
     else if(light < lightThreshold && rolledOut) {
-      rollOut(false);
+      thread4(pt4, false);
     }
     if(!isAuto) {
       c.sendCmd(light_is, light);
@@ -99,6 +99,44 @@ static int thread3(struct pt *pt)
   PT_END(pt);
 }
 
+static int thread4(struct pt *pt, bool rollIn) {
+  PT_BEGIN(pt)
+  int rolValue;
+  if(rollOut) {
+    while( getDistance() < maxRollout) {
+      digitalWrite(2, HIGH);
+      delay(50);
+      digitalWrite(2, LOW);
+      delay(20);
+    }
+    
+  }
+
+  else {
+    while( getDistance() > 5) {
+      digitalWrite(2, HIGH);
+      delay(50);
+      digitalWrite(2, LOW);
+      delay(20);
+    }
+  }
+  
+  /* Blink led */
+  
+  rolledOut = rollOut;
+  if(rollOut) {
+    digitalWrite(4, HIGH);
+    digitalWrite(3, LOW);
+  }
+
+  else {
+    digitalWrite(3, HIGH);
+    digitalWrite(4, LOW);
+  }
+  c.sendCmd(rollout_done, "Rollout complete");
+  PT_END(pt)
+}
+
 void on_get_light(void) {
   c.sendCmd(light_is, getLight());
 }
@@ -118,11 +156,11 @@ void on_get_length(void) {
 void on_roll_out(void) {
   int rollout = c.readInt16Arg(); 
   if(rollout == 1) {
-    rollOut(true);
+    thread4(pt4, true);
   }
 
   if(rollout == 0) {
-    rollOut(false);
+    thread4(pt4, false);
   }
   
 }
@@ -233,44 +271,6 @@ int getLightThreshold() {
 
 int getTempThreshold() {
   return tempThreshold;
-}
-
-void rollOut(bool rollOut) {
-  int rolValue;
-  if(rollOut) {
-    while( getDistance() < maxRollout) {
-      digitalWrite(2, HIGH);
-      delay(50);
-      digitalWrite(2, LOW);
-      delay(20);
-    }
-    
-  }
-
-  else {
-    while( getDistance() > 5) {
-      digitalWrite(2, HIGH);
-      delay(50);
-      digitalWrite(2, LOW);
-      delay(20);
-    }
-  }
-  
-  /* Blink led */
-  
-  rolledOut = rollOut;
-  if(rollOut) {
-    digitalWrite(4, HIGH);
-    digitalWrite(3, LOW);
-  }
-
-  else {
-    digitalWrite(3, HIGH);
-    digitalWrite(4, LOW);
-  }
-  c.sendCmd(rollout_done, "Rollout complete");
-  
-  
 }
 
 void setup() {
