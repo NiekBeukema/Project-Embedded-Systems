@@ -1,6 +1,7 @@
 import PyCmdMessenger
 import serial.tools.list_ports
 import time
+from random import randint
 
 class UnoNetworkController(object):
     commands = [["roll_out", "i"],
@@ -55,18 +56,27 @@ class UnoNetworkController(object):
     def getTemp(self):
         self.messenger.send("get_temp")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]).split(".")[0])
+        if(msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
 
     def getLight(self):
         self.messenger.send("get_light")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]))
+        if (msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
     def getDistance(self):
         self.messenger.send("get_distance")
         msg = self.messenger.receive("s")
-        return int(str(msg[1][0]))
+        if (msg != None):
+            return int(str(msg[1][0]).split(".")[0])
+        else:
+            return 0
 
 
     def getLength(self):
@@ -81,6 +91,16 @@ class UnoNetworkController(object):
 
     def getTempThreshold(self):
         self.messenger.send("get_temp_threshold")
+        msg = self.messenger.receive("s")
+        return int(str(msg[1][0]))
+
+    def setTempThreshold(self, value):
+        self.messenger.send("set_temp_threshold", value)
+        msg = self.messenger.receive("s")
+        return int(str(msg[1][0]))
+
+    def setLightThreshold(self, value):
+        self.messenger.send("set_light_threshold", value)
         msg = self.messenger.receive("s")
         return int(str(msg[1][0]))
 

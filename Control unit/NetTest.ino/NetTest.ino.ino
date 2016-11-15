@@ -1,7 +1,7 @@
 #include "CmdMessenger.h"
 #include "pt.h"
 
-struct pt pt1, pt2;
+struct pt pt1, pt2, pt3;
 
 /* Define available CmdMessenger commands */
 enum {
@@ -32,8 +32,8 @@ const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
 bool isAuto = false;
 bool rolledOut = false;
-int lightThreshold = 250;
-int tempThreshold = 21;
+int lightThreshold = 400; //300 is daglicht
+int tempThreshold = 22; // 20 is kamertmep
 int temp;
 int maxRollout = 150;
 
@@ -80,7 +80,6 @@ static int thread2(struct pt *pt, int interval)
 {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
- 
   if(rolledOut) {
     digitalWrite(4, HIGH);
     digitalWrite(3, LOW);
@@ -90,6 +89,13 @@ static int thread2(struct pt *pt, int interval)
     digitalWrite(3, HIGH);
     digitalWrite(4, LOW);
   }
+  PT_END(pt);
+}
+
+static int thread3(struct pt *pt)
+{
+  PT_BEGIN(pt);
+  c.feedinSerialData();
   PT_END(pt);
 }
 
@@ -122,11 +128,21 @@ void on_roll_out(void) {
 }
 
 void on_get_light_threshold(void) {
-  c.sendCmd(light_threshold_is, getLightThreshold());
+  c.sendCmd(light_threshold_is, lightThreshold);
 }
 
 void on_get_temp_threshold(void) {
-  c.sendCmd(temp_threshold_is, getTempThreshold());
+  c.sendCmd(temp_threshold_is, tempThreshold);
+}
+
+void on_set_temp_threshold(void) {
+   tempThreshold = c.readBinArg<int>();
+    c.sendCmd(temp_threshold_is, tempThreshold);
+}
+
+void on_set_light_threshold(void) {
+   lightThreshold = c.readBinArg<int>();
+  c.sendCmd(light_threshold_is, lightThreshold);
 }
 /* callback */
 void on_unknown_command(void){
@@ -143,6 +159,9 @@ void attach_callbacks(void) {
     c.attach(roll_out, on_roll_out);
     c.attach(get_light_threshold, on_get_light_threshold);
     c.attach(get_temp_threshold, on_get_temp_threshold);
+    c.attach(set_temp_threshold, on_set_temp_threshold);
+    c.attach(set_light_threshold, on_set_light_threshold);
+
     c.attach(on_unknown_command);
 }
 
@@ -262,13 +281,16 @@ void setup() {
     attach_callbacks();
     PT_INIT(&pt1);
     PT_INIT(&pt2);   
+    PT_INIT(&pt3);
   
 }
 
 void loop() {
     
-    c.feedinSerialData();
-    thread1(&pt1, 30000, 10000);
+    
+    //thread1(&pt1, 30000, 10000);
+    thread1(&pt1, 10000, 10000);
     thread2(&pt2, 100);
+    thread3(&pt3);
 }
 
