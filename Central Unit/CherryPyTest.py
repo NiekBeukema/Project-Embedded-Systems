@@ -100,7 +100,7 @@ class Default(object):
         };
         var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
         var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
-        setInterval(function() {
+        function updateGraph() {
           $.when(ajax1()).done(function(result) {
             console.log("Request Completed");
             var getTime = new Date();
@@ -109,8 +109,9 @@ class Default(object):
                 $("#currenttemp").html(result['tempValue'] + "Cº");
                 $("#currentlight").html(result['lightValue'] + "Lx");
                 $("#currentstatus").html(result['rolledOutValue']);
+            setTimeout(updateGraph(), 3000);
           })
-        }, 2000);
+        }
       });
     </script>
 
