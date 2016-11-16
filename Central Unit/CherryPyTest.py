@@ -60,7 +60,7 @@ class Default(object):
                 <div class="container">
                     <div class="row">
                         <div class="col-md-4">
-                            <a href="settings">Settings Are Here</a>
+
                             <button id="rollinbut" onclick="rollIn()" class="btn btn-default disabled">Rol in</button>
                             <button id="rolloutbut" onclick="rollOut()" class="btn btn-default disabled">Rol uit</button>
                             <button id="toggleautobut" onclick="toggleAuto()" class="btn btn-default">Naar handmatig</button>
