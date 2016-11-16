@@ -44,10 +44,10 @@ class Default(object):
                             <br/>
                             <br/>
                             <div id="values">
-                                <label>Current Temperature: </label>
-                                <div id="currenttemp">''' + tempValue + ''' Cº</div><br>
-                                <label>Current Light: </label>
-                                <div id="currentlight">''' + lightValue + ''' Lx</div><br>
+                                <label>Huidige temperatuur: </label>
+                                <div id="currenttemp">''' + tempValue + '''  Cº</div><br>
+                                <label>Lichtintensiteit: </label>
+                                <div id="currentlight">''' + lightValue + '''  Lx</div><br>
                                 <label>Status: </label>
                                 <div id="currentstatus">''' + rolledOutValue + '''</div><br>
                             </div>
@@ -70,6 +70,10 @@ class Default(object):
                 </div>
                 <script type="text/javascript">
                     var auto = true;
+                    var avgTemp = 0;
+                    var avgLight = 0;
+                    var tempCount = 0;
+                    var lightCount = 0;
                     function rollIn() {
                         var request = $.ajax({
                             url: "rollin",
@@ -162,20 +166,30 @@ class Default(object):
                         };
                         var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
                         var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
-                        function updateGraph() {
+                        function updateData() {
                           $.when(ajax1()).done(function(result) {
-                            var getTime = new Date();
-                            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
-                                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
-                                $("#currenttemp").html(result['tempValue'] + "Cº");
-                                $("#currentlight").html(result['lightValue'] + "Lx");
+                                lightCount++;
+                                tempCount++;
+                                avgTemp = (avgTemp + result['tempValue']);
+                                avgLight = (avgLight + result['lightValue']);
+                                $("#currenttemp").html(result['tempValue'] + " Cº");
+                                $("#currentlight").html(result['lightValue'] + " Lx");
                                 $("#currentstatus").html(result['rolledOutValue']);
-                                wait(3000);
-                                updateGraph();
+                                wait(1000);
+                                updateData();
                           })
                         }
+
+                        function updateGraph() {
+                            var getTime = new Date();
+                            graph2d1data.update({x: getTime.getTime(), y: (avgTemp / tempCount)});
+                            graph2d2data.update({x: getTime.getTime(), y: (avgLight / lightCount)});
+
+                        }
                      console.log("First execution");
-                     updateGraph();
+                     setInterval(updateGraph, 10000);
+                     updateData();
+
                       });
     </script>
             </body>
@@ -199,8 +213,8 @@ class Default(object):
         if lightThreshold or tempThreshold:
             settingsSaved = "<p>settings saved!</p>"
 
-        self.currentLightThreshold = str(self.controller.getLightThreshold())
-        self.currentTempThreshold = str(self.controller.getTempThreshold())
+        currentLightThreshold = str(self.controller.getLightThreshold())
+        currentTempThreshold = str(self.controller.getTempThreshold())
 
         # debug for use without arduino connected
         # currentLightThreshold = str(randint(10, 50))
