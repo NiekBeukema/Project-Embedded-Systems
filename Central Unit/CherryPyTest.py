@@ -223,7 +223,7 @@ class Default(object):
     def settings(self, lightThreshold=0, tempThreshold=0):
 
         settingsSaved = ""
-
+        time.sleep(2)
         if lightThreshold:
             # debug
             print("light value is: " + str(lightThreshold))
@@ -235,6 +235,7 @@ class Default(object):
 
         if lightThreshold or tempThreshold:
             settingsSaved = '<br/><br/><div class="alert alert-success" role="alert">Instellingen opgeslagen</div>'
+
 
         currentLightThreshold = str(self.controller.getLightThreshold())
         currentTempThreshold = str(self.controller.getTempThreshold())
