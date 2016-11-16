@@ -24,7 +24,8 @@ class UnoNetworkController(object):
                 ["get_temp_threshold", "i"],
                 ["timer_runtime_end", "s"],
                 ["is_rolled_out", "s"],
-                ["is_rolled_out_is", "s"]
+                ["is_rolled_out_is", "s"],
+                ["toggle_auto", ""]
                 ]
 
     arduino = 0#PyCmdMessenger.ArduinoBoard("COM3", baud_rate=9600)
@@ -52,9 +53,9 @@ class UnoNetworkController(object):
 
     def rollOut(self, roll_out):
         self.messenger.send("roll_out", roll_out)
-        time.sleep(3)
-        msg = self.messenger.receive("s")
-        return str(msg)
+        #time.sleep(3)
+        #msg = self.messenger.receive("s")
+        return str("")
 
     def getTemp(self):
         valid = False
@@ -132,3 +133,6 @@ class UnoNetworkController(object):
     def waitForMessage(self):
         msg = self.messenger.receive("s")
         return msg;
+
+    def toggleauto(self):
+        self.messenger.send("toggle_auto")

@@ -14,14 +14,7 @@ class Default(object):
 
     # cherrypy.expose exposes a def as a webpage
     @cherrypy.expose
-    def index(self, control=""):
-
-        if control == "rollIn":
-            print("Rollin In...")
-            self.controller.rollOut(0)
-        if control == "rollOut":
-            print("Rollin Out...")
-            self.controller.rollOut(1)
+    def index(self):
 
         # convert int to str for display reasons
         lightValue = str(self.controller.getLight())
@@ -33,35 +26,22 @@ class Default(object):
         <html>
             <head>
                 <title>Zeng Home | Project 2.1</title>
-
                 <!-- JS Scripts -->
                 <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
                 <!-- Stylesheets -->
                 <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
                 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
             </head>
-
             <body>
                 <div class="container">
                     <div class="row">
                         <div class="col-md-4">
                             <a href="settings">Settings Are Here</a>
-                            <form method="post">
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="control" value="rollIn" checked>Inrollen
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="control" value="rollOut">Uitrollen
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-default">Uitvoeren</button>
-                            </form>
+                            <button id="rollinbut" onclick="rollIn()" class="btn btn-default disabled">Rol in</button>
+                            <button id="rolloutbut" onclick="rollOut()" class="btn btn-default disabled">Rol uit</button>
+                            <button id="toggleautobut" onclick="toggleAuto()" class="btn btn-default">Naar handmatig</button>
                             <br/>
                             <br/>
                             <div id="values">
@@ -89,65 +69,116 @@ class Default(object):
                         </div>
                     </div>
                 </div>
-
                 <script type="text/javascript">
-                function ajax1() {
-                    return $.ajax({
-                        url : 'values',
-                        type : 'POST',
-                        dataType : 'json'
-                      })
-                }
+                    var auto = true;
+                    function rollIn() {
+                        var request = $.ajax({
+                            url: "rollin",
+                            type: "POST",
+                            dataType: "text"
+                        });
+                        request.done(function(msg) {
+                            console.log("succes");
+                        });
+                        request.fail(function(jqXHR, textStatus) {
+                            alert( "Request failed: " + textStatus );
+                        });
+                    }
 
-    function wait(ms) {
-        var start = new Date().getTime();
-        var end = start;
-        while(end < start + ms) {
-            end = new Date().getTime();
-        }
-    }
+                    function rollOut() {
+                        var request = $.ajax({
+                            url: "rollout",
+                            type: "POST",
+                            dataType: "text"
+                        });
+                        request.done(function(msg) {
+                            console.log("succes");
+                        });
+                        request.fail(function(jqXHR, textStatus) {
+                            alert( "Request failed: " + textStatus );
+                        });
+                    }
 
-      $(document).ready(function() {
-        //$(document).delay(1000);
+                    function toggleAuto() {
+                        var request = $.ajax({
+                            url: "toggleauto",
+                            type: "POST",
+                            dataType: "text"
+                        });
+                        request.done(function(msg) {
+                            if(auto) {
+                                $("#rollinbut").toggleClass("disabled");
+                                $("#rolloutbut").toggleClass("disabled");
+                                $("#toggleautobut").html("Naar automatisch");
+                                auto = false
+                            }
 
-        var tempContainer = document.getElementById('tempGraph');
-        var lightContainer = document.getElementById('lightGraph');
-        var getTime = new Date();
-        var getTimePlus = new Date(getTime);
-        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
-        var items = [
-          {x: getTime.getTime(), y: 0}
-        ];
-        var graph2d1data = new vis.DataSet(items);
-        var graph2d2data = new vis.DataSet(items);
-        var options = {
-          start: getTime.getTime(),
-          end: getTimePlus.getTime(),
-          autoResize: true,
-          drawPoints: false
-        };
-        var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
-        var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
-        function updateGraph() {
-          $.when(ajax1()).done(function(result) {
-            var getTime = new Date();
-            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
-                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
-                $("#currenttemp").html(result['tempValue'] + "Cº");
-                $("#currentlight").html(result['lightValue'] + "Lx");
-                $("#currentstatus").html(result['rolledOutValue']);
-                wait(3000);
-                updateGraph();
-          })
+                            else {
+                                $("#rollinbut").toggleClass("disabled");
+                                $("#rolloutbut").toggleClass("disabled");
+                                $("#toggleautobut").html("Naar handmatig");
+                                auto = true;
+                            }
 
-        }
+                        });
+                        request.fail(function(jqXHR, textStatus) {
+                            alert( "Request failed: " + textStatus );
+                        });
+                    }
 
-     console.log("First execution");
-     updateGraph();
+                    function ajax1() {
+                        return $.ajax({
+                            url : 'values',
+                            type : 'POST',
+                            dataType : 'json'
+                          })
+                    }
 
-      });
+                    function wait(ms) {
+                        var start = new Date().getTime();
+                        var end = start;
+                        while(end < start + ms) {
+                            end = new Date().getTime();
+                        }
+                    }
+                      $(document).ready(function() {
+                        //$("#rollinbut").bind("click", rollIn());
+                        //$("#rolloutbut").bind("click", rollOut())
+                        //$(document).delay(1000);
+                        var tempContainer = document.getElementById('tempGraph');
+                        var lightContainer = document.getElementById('lightGraph');
+                        var getTime = new Date();
+                        var getTimePlus = new Date(getTime);
+                        getTimePlus.setMinutes(getTime.getMinutes() + 5 )
+                        var items = [
+                          {x: getTime.getTime(), y: 0}
+                        ];
+                        var graph2d1data = new vis.DataSet(items);
+                        var graph2d2data = new vis.DataSet(items);
+                        var options = {
+                          start: getTime.getTime(),
+                          end: getTimePlus.getTime(),
+                          autoResize: true,
+                          drawPoints: false
+                        };
+                        var graph2d1 = new vis.Graph2d(tempContainer, graph2d1data, options);
+                        var graph2d2 = new vis.Graph2d(lightContainer, graph2d2data, options);
+                        function updateGraph() {
+                          $.when(ajax1()).done(function(result) {
+                            var getTime = new Date();
+                            graph2d1data.update({x: getTime.getTime(), y: result['tempValue']});
+                                graph2d2data.update({x: getTime.getTime(), y: result['lightValue']});
+                                $("#currenttemp").html(result['tempValue'] + "Cº");
+                                $("#currentlight").html(result['lightValue'] + "Lx");
+                                $("#currentstatus").html(result['rolledOutValue']);
+                                wait(3000);
+                                updateGraph();
+                          })
+                        }
+                     console.log("First execution");
+                     updateGraph();
+                      });
     </script>
-
             </body>
         </html>'''
 
@@ -230,10 +261,21 @@ class Default(object):
         rolledOutValue = self.controller.getRolledOut()
         return '''{"tempValue":''' + str(tempValue) + ''', "lightValue":''' + str(lightValue) + ''', "rolledOutValue":''' + str(rolledOutValue) + '''}'''
 
+    @cherrypy.expose()
+    def rollin(self):
+        print("Rolling in")
+        self.controller.rollOut(0)
+
+    @cherrypy.expose()
+    def rollout(self):
+        print("Rolling out")
+        self.controller.rollOut(1)
+    @cherrypy.expose()
+    def toggleauto(self):
+        self.controller.toggleauto()
+        print("toggling modes")
+
 
 if __name__ == '__main__':
     # start cherrypy server
     cherrypy.quickstart(Default(), '/', 'CherryPyTest.config')
-
-
-

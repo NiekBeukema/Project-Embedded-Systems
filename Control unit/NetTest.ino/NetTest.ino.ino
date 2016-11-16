@@ -25,14 +25,15 @@ enum {
     get_temp_threshold,
     timer_runtime_end,
     is_rolled_out,
-    is_rolled_out_is
+    is_rolled_out_is,
+    toggle_auto
 };
 
 
 /* Initialize CmdMessenger -- this should match PyCmdMessenger instance */
 const int BAUD_RATE = 9600;
 CmdMessenger c = CmdMessenger(Serial,',',';','/');
-bool isAuto = false;
+bool isAuto = true;
 int rolledOut = 0;
 int lightThreshold = 200; //300 is daglicht
 int tempThreshold = 25; // 20 is kamertmep
@@ -51,20 +52,20 @@ static int thread1(struct pt *pt, int interval_1, int interval_2)
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_1 );
     temp = getTemp();
     light = getLight();
-    if((temp > tempThreshold || light > lightThreshold) && rolledOut == 0) {
+    if((temp > tempThreshold || light > lightThreshold) && rolledOut == 0 && isAuto) {
       thread4(&pt4, true);
     }
 
-    else if((temp < tempThreshold && light < lightThreshold) && rolledOut == 1) {
+    else if((temp < tempThreshold && light < lightThreshold) && rolledOut == 1 && isAuto) {
       thread4(&pt4, false);
     }
     timestamp = millis(); // take a new timestamp
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval_2 );
-    if((light > lightThreshold || temp > tempThreshold) && rolledOut == 0) {
+    if((light > lightThreshold || temp > tempThreshold) && rolledOut == 0 && isAuto) {
       thread4(&pt4, true);
     }
 
-    else if((light < lightThreshold && temp < tempThreshold) && rolledOut == 1) {
+    else if((light < lightThreshold && temp < tempThreshold) && rolledOut == 1 && isAuto) {
       thread4(&pt4, false);
     }
     
@@ -183,6 +184,16 @@ void on_set_light_threshold(void) {
    lightThreshold = c.readBinArg<int>();
   c.sendCmd(light_threshold_is, lightThreshold);
 }
+
+void on_toggle_auto(void) {
+  if(isAuto) {
+      isAuto = false;
+  }
+
+  else {
+    isAuto = true;
+  }
+}
 /* callback */
 void on_unknown_command(void){
     c.sendCmd(error,"Command without callback.");
@@ -201,7 +212,7 @@ void attach_callbacks(void) {
     c.attach(set_temp_threshold, on_set_temp_threshold);
     c.attach(set_light_threshold, on_set_light_threshold);
     c.attach(is_rolled_out, on_is_rolled_out);
-
+    c.attach(toggle_auto, on_toggle_auto);
     c.attach(on_unknown_command);
 }
 
