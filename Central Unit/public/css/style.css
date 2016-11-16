@@ -1,0 +1,4 @@
+/* prevents text from going under the navbar */
+body {
+    padding-top: 50px;
+}

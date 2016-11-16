@@ -32,8 +32,31 @@ class Default(object):
                 <!-- Stylesheets -->
                 <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
                 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+                <link href="/static/css/style.css" rel="stylesheet"/>
             </head>
             <body>
+
+                <nav class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="#">Zeng ltd.</a>
+                        </div>
+                        <div id="navbar" class="collapse navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href="/">Home</a></li>
+                                <li><a href="settings">Instellingen</a></li>
+                                <li><a href="values">Debug</a></li>
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </nav>
+
                 <div class="container">
                     <div class="row">
                         <div class="col-md-4">
@@ -211,7 +234,7 @@ class Default(object):
             self.controller.setTempThreshold(tempThreshold)
 
         if lightThreshold or tempThreshold:
-            settingsSaved = "<p>settings saved!</p>"
+            settingsSaved = '<br/><br/><div class="alert alert-success" role="alert">Instellingen opgeslagen</div>'
 
         currentLightThreshold = str(self.controller.getLightThreshold())
         currentTempThreshold = str(self.controller.getTempThreshold())
@@ -224,42 +247,63 @@ class Default(object):
         <html>
             <head>
                 <title>Settings | Project 2.1</title>
-                <link rel="stylesheet" href="/static/css/metro.min.css" type="text/css">
-                <link rel="stylesheet" href="/static/css/metro-responsive.min.css" type="text/css" />
-                <script type="Javascript" src="/static/js/jquery-3.1.1.min.js"></script>
-                <script type="Javascript" src="/static/js/metro.min.js"></script>
-                <script src="/static/js/vis.js"></script>
-                <link href="/static/css/vis.css" rel="stylesheet" type="text/css" />
+                <!-- JS Scripts -->
+                <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+                <!-- Stylesheets -->
+                <link rel="stylesheet" href="/static/css/vis.css" type="text/css" />
+                <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+                <link href="/static/css/style.css" rel="stylesheet"/>
             </head>
             <body>
-                <div class="grid">
-                    <div class="row cells10">
-                        <div class="cell offset1 colspan4">
+                <nav class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="#">Zeng ltd.</a>
+                        </div>
+                        <div id="navbar" class="collapse navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="/">Home</a></li>
+                                <li class="active"><a href="settings">Instellingen</a></li>
+                                <li><a href="values">Debug</a></li>
+                            </ul>
+                        </div><!--/.nav-collapse -->
+                    </div>
+                </nav>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4">
                             <h2>Program Settings</h2>
                         </div>
                     </div>
-                    <div class="row cells10">
-                        <div class="cell offset1 colspan4">
+                    <div class="row">
+                        <div class="col-md-6">
                             <form method="post">
                                 <label>Current lightThreshold is: ''' + currentLightThreshold + '''</label>
                                 <br/>
                                 <label for="lightThreshold">LightThreshold: </label>
                                 <div class="input-control text">
-                                    <input type="text" size="5" name="lightThreshold" value="''' + currentLightThreshold + '''"
+                                    <input type="text" class="form-control" name="lightThreshold" value="''' + currentLightThreshold + '''"
                                     placeholder="Threshold"/>
                                 </div>
-                                <br/>
                                 <br/>
                                 <label>Current tempThreshold is: ''' + currentTempThreshold + '''</label>
                                 <br/>
                                 <label for="tempThreshold">TempThreshold: </label>
                                 <div class="input-control text">
-                                    <input type="text" size="5" name="tempThreshold"
+                                    <input type="text" class="form-control" name="tempThreshold"
                                     value="''' + currentTempThreshold + '''" placeholder="Threshold"/>
                                 </div>
                                 <br/>
-                                <br/>
-                                <input type="submit" value="Save Settings">
+                                <button type="submit" class="btn btn-default">Opslaan</button>
                                 ''' + settingsSaved + ''''
                             </form>
                         </div>
