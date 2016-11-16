@@ -1,18 +1,17 @@
 from UnoNetworking import UnoNetworkController
 import cherrypy
-# import os.path
 from random import randint
 import time
-
 
 class Default(object):
 
     def __init__(self):
-        # establish connection with Arduino
+        # Create a new instance of UnoNetworkingController
         self.controller = UnoNetworkController()
+        # Establish connection with Arduino
         self.controller.connect()
 
-    # cherrypy.expose exposes a def as a webpage
+    # cherrypy.expose tells CherryPy
     @cherrypy.expose
     def index(self):
 
@@ -186,22 +185,26 @@ class Default(object):
     # settings page for various variables
     def settings(self, lightThreshold=0, tempThreshold=0):
 
+        settingsSaved = ""
+
         if lightThreshold:
-            print("i got " + str(lightThreshold) + " as a light value")
-            # self.controller.setLightThreshold(lightThreshold)
+            # debug
+            print("light value is: " + str(lightThreshold))
+            self.controller.setLightThreshold(lightThreshold)
         if tempThreshold:
-            print("i got " + str(tempThreshold) + " as a temp value")
-            # self.controller.setTempThreshold(tempThreshold)
+            # debug
+            print("temp value is: " + str(tempThreshold))
+            self.controller.setTempThreshold(tempThreshold)
 
-        # self.currentLightThreshold = str(self.controller.getLightThreshold())
+        if lightThreshold or tempThreshold:
+            settingsSaved = "<p>settings saved!</p>"
+
+        self.currentLightThreshold = str(self.controller.getLightThreshold())
+        self.currentTempThreshold = str(self.controller.getTempThreshold())
 
         # debug for use without arduino connected
-        currentLightThreshold = str(randint(10, 50))
-
-        # self.currentTempThreshold = str(self.controller.getTempThreshold())
-
-        # debug for use without arduino connected
-        currentTempThreshold = str(randint(10, 50))
+        # currentLightThreshold = str(randint(10, 50))
+        # currentTempThreshold = str(randint(10, 50))
 
         return '''
         <html>
@@ -243,6 +246,7 @@ class Default(object):
                                 <br/>
                                 <br/>
                                 <input type="submit" value="Save Settings">
+                                ''' + settingsSaved + ''''
                             </form>
                         </div>
                     </div>
@@ -270,6 +274,7 @@ class Default(object):
     def rollout(self):
         print("Rolling out")
         self.controller.rollOut(1)
+
     @cherrypy.expose()
     def toggleauto(self):
         self.controller.toggleauto()
